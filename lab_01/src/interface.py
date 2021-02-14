@@ -7,6 +7,7 @@ EDIT = 1
 
 ACTION = None
 IND_TO_EDIT = 0
+ROOT_WINDOW = None
 
 class RootWindow():
     main_window = None
@@ -15,7 +16,8 @@ class RootWindow():
 
     def __init__(self):
         self.main_window = tk.Tk()
-        self.main_window.geometry("800x600+298+48")
+        self.main_window.geometry("800x520+298+48")
+        self.main_window.resizable(0, 0)
         self.setup_main_window()
 
     def mainloop(self):
@@ -23,7 +25,7 @@ class RootWindow():
         self.mainCanvas.mainloop()
 
     def setup_main_window(self):
-        self.mainCanvas = tk.Canvas(self.main_window, bg='lavender')
+        self.mainCanvas = tk.Canvas(self.main_window, bg='lavender', width=625, height=500)
         self.mainCanvas.grid(row=0, column=1, rowspan=8)
         
         self.main_window.title('lab 1')
@@ -69,23 +71,23 @@ class RootWindow():
 
     def edit_dot(self):
         global ACTION, IND_TO_EDIT # i'm so sorry ;(
-
-        self.dot_win = AddDotWin(self.main_window)
-        ACTION = EDIT
-
-        ind = self.dots_list.curselection()[0]
-        dot_coord = self.dots_list.get(ind).split(' ; ')
-
-        IND_TO_EDIT = ind
-
-        self.dot_win.xentry.delete(0, tk.END)
-        self.dot_win.xentry.insert(0, dot_coord[0])
         
-        self.dot_win.yentry.delete(0, tk.END)
-        self.dot_win.yentry.insert(0, dot_coord[1])
-        
-        self.dot_win.set_entry.delete(0, tk.END)
-        self.dot_win.set_entry.insert(0, dot_coord[2])
+        if self.edit_dot_btn['state'] == tk.ACTIVE:
+            self.dot_win = AddDotWin(self.main_window)
+            ACTION = EDIT
+
+            ind = self.dots_list.curselection()[0]
+            dot_coord = self.dots_list.get(ind).split(' ; ')
+
+            IND_TO_EDIT = ind
+
+            self.dot_win.xentry.delete(0, tk.END)
+            self.dot_win.xentry.insert(0, dot_coord[0])
+            
+            self.dot_win.yentry.delete(0, tk.END)
+            self.dot_win.yentry.insert(0, dot_coord[1])
+            
+            self.dot_win.set_var.set(dot_coord[2])
     
     def del_dot(self):
         ind = self.dots_list.curselection()[0]
@@ -97,12 +99,11 @@ class RootWindow():
         self.check_list_box()
 
 
-    
     def check_list_box(self):
         if len(self.dots_list.get(0, tk.END)) == 0: # if listbox is empty we block buttons
-            state = 'disabled'
+            state = tk.DISABLED
         else:
-            state = 'active'
+            state = tk.NORMAL
         
         self.edit_dot_btn.configure(state=state)
         self.del_dot_btn.configure(state=state)
@@ -114,7 +115,7 @@ class AddDotWin(tk.Toplevel):
     def __init__(self, *args, **kwargs):
         tk.Toplevel.__init__(self, *args, **kwargs)
 
-        self.geometry('275x130')
+        self.geometry('300x130')
 
         self.title('Add dot')
 
@@ -123,9 +124,6 @@ class AddDotWin(tk.Toplevel):
 
         self.ylabel = tk.Label(self, text='y', justify='center')
         self.ylabel.grid(row=0, column=1)
-
-        # self.setlabel = tk.Label(self, text='Множество', justify='center')
-        # self.setlabel.grid(row=0, column=2)
 
         self.xentry = tk.Entry(self, width=10, justify='center')
         self.xentry.grid(row=1, column=0)
@@ -144,14 +142,10 @@ class AddDotWin(tk.Toplevel):
         set_1.grid(row=0, column=2)
         set_2.grid(row=1, column=2)
 
-
-        # self.set_entry = tk.Spinbox(self, from_=1, to=2, width=10, justify='center')
-        # self.set_entry.grid(row=1, column=2)
-
         self.add_btn = tk.Button(self, text='Ok')
         self.add_btn.grid(row=2, column=1)
-        self.add_btn.bind("<Button-1>", lambda event: conf_dot(window, self))
-        # self.add_btn.configure(command=lambda: self.get_entries())
+        self.add_btn.bind("<Button-1>", lambda event: conf_dot(ROOT_WINDOW, self))
+
 
     def get_entries(self) -> tuple:
         return [self.xentry.get(), self.yentry.get(), self.set_var.get()]
@@ -191,8 +185,3 @@ def conf_dot(root:RootWindow, dot_win:AddDotWin):
     
 
     root.check_list_box()
-
-
-window = RootWindow()
-
-window.mainloop()
