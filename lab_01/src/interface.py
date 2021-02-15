@@ -72,7 +72,7 @@ class RootWindow():
     def edit_dot(self):
         global ACTION, IND_TO_EDIT # i'm so sorry ;(
         
-        if self.edit_dot_btn['state'] == tk.ACTIVE:
+        if self.edit_dot_btn['state'] == tk.NORMAL:
             self.dot_win = AddDotWin(self.main_window)
             ACTION = EDIT
 
