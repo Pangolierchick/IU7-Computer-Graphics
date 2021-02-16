@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import geom as g
 
 ADD  = 0
 EDIT = 1
@@ -9,10 +10,14 @@ ACTION = None
 IND_TO_EDIT = 0
 ROOT_WINDOW = None
 
+DOT_RADIUS = 5
+
 class RootWindow():
     main_window = None
     mainCanvas = None
     dot_win = None
+
+    dots = []
 
     def __init__(self):
         self.main_window = tk.Tk()
@@ -59,8 +64,30 @@ class RootWindow():
         clear_table.grid(row=6, column=0)
 
         solve_problem = tk.Button(self.main_window, text='Решить задачу', width=15)
-        solve_problem.bind('<Button-1>')
+        solve_problem.bind('<Button-1>', lambda event: self.solve_problem())
         solve_problem.grid(row=7, column=0)
+    
+
+    def get_dots_from_table(self) -> list:
+        for ind, dot in enumerate(self.dots_list.get(0, tk.END)):
+            self.dots.append([ind + 1] + list(map(float, dot.split(' ; '))))
+        
+        return self.dots
+
+    def solve_problem(self):
+        dots = self.get_dots_from_table()
+
+        # min_pic = g.solve_problem(self.dots_list)
+
+        for i in dots:
+            x = 3 * i[1] + 312
+            y = -3 * i[2] + 250
+            if i[3] == 1:
+                color = 'red'
+            else:
+                color = 'blue'
+
+            self.mainCanvas.create_oval(x, y, x + DOT_RADIUS, y + DOT_RADIUS, fill=color)
     
 
     def add_dot(self):
