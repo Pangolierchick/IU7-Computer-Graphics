@@ -1,3 +1,5 @@
+from functools import reduce
+from math import inf
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -12,12 +14,17 @@ ROOT_WINDOW = None
 
 DOT_RADIUS = 5
 
+CANVAS_HALF_WIDTH = 312
+CANVAS_HALF_HEIGHT = 250
+
 class RootWindow():
     main_window = None
     mainCanvas = None
     dot_win = None
 
     dots = []
+
+    dot_num = 1
 
     def __init__(self):
         self.main_window = tk.Tk()
@@ -32,9 +39,9 @@ class RootWindow():
     def setup_main_window(self):
         self.mainCanvas = tk.Canvas(self.main_window, bg='lavender', width=625, height=500)
         self.mainCanvas.grid(row=0, column=1, rowspan=8)
-        
+
         self.main_window.title('lab 1')
-        
+
         tk.Label(self.main_window, text='ТОЧКИ').grid(row=0, column=0)
 
 
@@ -50,12 +57,12 @@ class RootWindow():
         self.edit_dot_btn.bind('<Button-1>', lambda event: self.edit_dot())
         self.edit_dot_btn.grid(row=4, column=0)
 
-        
+
         self.del_dot_btn = tk.Button(self.main_window, text='Удалить точку', width=15)
         self.del_dot_btn.bind('<Button-1>', lambda event: self.del_dot())
         self.del_dot_btn.grid(row=5, column=0)
-        
-        
+
+
         self.edit_dot_btn.configure(state='disabled')
         self.del_dot_btn.configure(state='disabled')
 
@@ -66,29 +73,102 @@ class RootWindow():
         solve_problem = tk.Button(self.main_window, text='Решить задачу', width=15)
         solve_problem.bind('<Button-1>', lambda event: self.solve_problem())
         solve_problem.grid(row=7, column=0)
-    
+
 
     def get_dots_from_table(self) -> list:
         for ind, dot in enumerate(self.dots_list.get(0, tk.END)):
-            self.dots.append([ind + 1] + list(map(float, dot.split(' ; '))))
-        
+            self.dots.append(list(map(float, dot.split(' ; '))))
+
         return self.dots
 
     def solve_problem(self):
+        self.mainCanvas.delete('all')
         dots = self.get_dots_from_table()
 
-        # min_pic = g.solve_problem(self.dots_list)
+        min_pic = g.solve_problem(self.dots_list.get(0, tk.END))
 
-        for i in dots:
-            x = 3 * i[1] + 312
-            y = -3 * i[2] + 250
-            if i[3] == 1:
-                color = 'red'
-            else:
-                color = 'blue'
 
-            self.mainCanvas.create_oval(x, y, x + DOT_RADIUS, y + DOT_RADIUS, fill=color)
-    
+        x_offset = min_pic.i_p[0]
+        y_offset = min_pic.i_p[1]
+
+        c1x = min_pic.circle1.center.x - x_offset
+        c1y = min_pic.circle1.center.y - y_offset
+        
+        c2x = min_pic.circle2.center.x - x_offset
+        c2y = min_pic.circle2.center.y - y_offset
+
+        t11x = min_pic.tangent1[0].x - x_offset
+        t11y = min_pic.tangent1[0].y - y_offset
+        t12x = min_pic.tangent1[1].x - x_offset
+        t12y = min_pic.tangent1[1].y - y_offset
+        
+        t21x = min_pic.tangent2[0].x - x_offset
+        t21y = min_pic.tangent2[0].y - y_offset
+        t22x = min_pic.tangent2[1].x - x_offset
+        t22y = min_pic.tangent2[1].y - y_offset
+
+
+        some_x_dots = [c1x + min_pic.circle1.radius, c1x - min_pic.circle1.radius,
+                       c2x + min_pic.circle2.radius, c2x - min_pic.circle2.radius]
+
+        some_y_dots = [c1y + min_pic.circle1.radius, c1y - min_pic.circle1.radius,
+                       c2y + min_pic.circle2.radius, c2y - min_pic.circle2.radius]
+
+        right = max(some_x_dots)
+        left  = min(some_x_dots)
+        up    = max(some_y_dots)
+        down  = max(some_y_dots)
+
+
+        x_scale_r = abs(CANVAS_HALF_WIDTH // right) if right != 0 else inf
+        x_scale_l = abs(CANVAS_HALF_WIDTH // left) if left != 0 else inf
+
+        y_scale_u = abs(CANVAS_HALF_HEIGHT // up) if up != 0 else inf
+        y_scale_d = abs(CANVAS_HALF_HEIGHT // down) if down != 0 else inf
+
+        scale = min(x_scale_r, x_scale_l, y_scale_u, y_scale_d) - 1
+
+        c1_x = int(scale * c1x + CANVAS_HALF_WIDTH)
+        c1_y = int(-scale * c1y + CANVAS_HALF_HEIGHT)
+        c1_r = int(scale * min_pic.circle1.radius)
+        self.mainCanvas.create_oval(c1_x - c1_r, c1_y + c1_r, c1_x + c1_r, c1_y - c1_r, width=2, outline='red')
+
+
+        c2_x = int(scale * c2x + CANVAS_HALF_WIDTH)
+        c2_y = int(-scale * c2y + CANVAS_HALF_HEIGHT)
+        c2_r = int(scale * min_pic.circle2.radius)
+        self.mainCanvas.create_oval(c2_x - c2_r, c2_y + c2_r, c2_x + c2_r, c2_y - c2_r, width=2, outline='blue')
+
+        t1_1_x = int(scale * t11x + CANVAS_HALF_WIDTH)
+        t1_1_y = int(-scale * t11y + CANVAS_HALF_HEIGHT)
+        t1_2_x = int(scale * t12x + CANVAS_HALF_WIDTH)
+        t1_2_y = int(-scale * t12y + CANVAS_HALF_HEIGHT)
+        self.mainCanvas.create_line(t1_1_x, t1_1_y, t1_2_x, t1_2_y, width=2)
+
+
+        t2_1_x = int(scale * t21x + CANVAS_HALF_WIDTH)
+        t2_1_y = int(-scale * t21y + CANVAS_HALF_HEIGHT)
+        t2_2_x = int(scale * t22x + CANVAS_HALF_WIDTH)
+        t2_2_y = int(-scale * t22y + CANVAS_HALF_HEIGHT)
+
+        self.mainCanvas.create_line(t2_1_x, t2_1_y, t2_2_x, t2_2_y, width=2)
+
+        self.mainCanvas.create_line(c1_x, c1_y, t1_1_x, t1_1_y, width=2)
+        self.mainCanvas.create_line(c1_x, c1_y, t2_1_x, t2_1_y, width=2)
+        self.mainCanvas.create_line(c2_x, c2_y, t1_2_x, t1_2_y, width=2)
+        self.mainCanvas.create_line(c2_x, c2_y, t2_2_x, t2_2_y, width=2)
+
+        user_dots_1 = list(map(lambda x: scale_dot(x.x, x.y, x_offset, y_offset, scale), min_pic.circle1.dots))
+        user_dots_2 = list(map(lambda x: scale_dot(x.x, x.y, x_offset, y_offset, scale), min_pic.circle2.dots))
+
+        for dot in (user_dots_1):
+            self.mainCanvas.create_oval(dot[0] - DOT_RADIUS, dot[1] + DOT_RADIUS, dot[0] + DOT_RADIUS, dot[1] - DOT_RADIUS, fill='green')
+        
+        for dot in (user_dots_2):
+            self.mainCanvas.create_oval(dot[0] - DOT_RADIUS, dot[1] + DOT_RADIUS, dot[0] + DOT_RADIUS, dot[1] - DOT_RADIUS, fill='purple')
+
+        print('area', float(min_pic.area))
+
 
     def add_dot(self):
         global ACTION # sorry for that
@@ -98,32 +178,36 @@ class RootWindow():
 
     def edit_dot(self):
         global ACTION, IND_TO_EDIT # i'm so sorry ;(
-        
-        if self.edit_dot_btn['state'] == tk.NORMAL:
-            self.dot_win = AddDotWin(self.main_window)
-            ACTION = EDIT
 
-            ind = self.dots_list.curselection()[0]
-            dot_coord = self.dots_list.get(ind).split(' ; ')
+        self.dot_win = AddDotWin(self.main_window)
+        ACTION = EDIT
 
-            IND_TO_EDIT = ind
+        ind = self.dots_list.curselection()[0]
+        dot_coord = self.dots_list.get(ind).split(' ; ')
 
-            self.dot_win.xentry.delete(0, tk.END)
-            self.dot_win.xentry.insert(0, dot_coord[0])
-            
-            self.dot_win.yentry.delete(0, tk.END)
-            self.dot_win.yentry.insert(0, dot_coord[1])
-            
-            self.dot_win.set_var.set(dot_coord[2])
-    
+        IND_TO_EDIT = ind
+
+        self.dot_win.xentry.delete(0, tk.END)
+        self.dot_win.xentry.insert(0, dot_coord[1])
+
+        self.dot_win.yentry.delete(0, tk.END)
+        self.dot_win.yentry.insert(0, dot_coord[2])
+
+        self.dot_win.set_var.set(dot_coord[3])
+
+        self.dot_num -= 1
+
     def del_dot(self):
         ind = self.dots_list.curselection()[0]
         self.dots_list.delete(ind)
         self.check_list_box()
-    
+        self.dot_num -= 1
+
     def clear_table(self):
         self.dots_list.delete(0, tk.END)
         self.check_list_box()
+        self.dot_num = 0
+        self.mainCanvas.delete('all')
 
 
     def check_list_box(self):
@@ -131,10 +215,10 @@ class RootWindow():
             state = tk.DISABLED
         else:
             state = tk.NORMAL
-        
+
         self.edit_dot_btn.configure(state=state)
         self.del_dot_btn.configure(state=state)
-        
+
 
 class AddDotWin(tk.Toplevel):
     vals = None
@@ -175,12 +259,12 @@ class AddDotWin(tk.Toplevel):
 
 
     def get_entries(self) -> tuple:
-        return [self.xentry.get(), self.yentry.get(), self.set_var.get()]
+        return [ROOT_WINDOW.dot_num, self.xentry.get(), self.yentry.get(), self.set_var.get()]
 
 
-def find_in_listbox(listbox:tk.Listbox, record:str) -> bool:
+def find_in_listbox(listbox:tk.Listbox, record:list) -> bool:
     for i in listbox.get(0, tk.END):
-        if i == record:
+        if list(map(float, i.split(' ; ')[1:])) == record:
             return True
     return False
 
@@ -190,25 +274,30 @@ def conf_dot(root:RootWindow, dot_win:AddDotWin):
     items = dot_win.get_entries()
 
     try:
-        items = list(map(float, items[:2])) + [int(items[2])]
+        items = [items[0]] + list(map(float, items[1:3])) + [int(items[3])]
+        print(items)
     except ValueError:
         messagebox.showerror(title='Ошибка', message='Не все значения имеют вещественный тип. Проверьте ввод')
         return None
 
-    if find_in_listbox(root.dots_list, f"{items[0]} ; {items[1]} ; {items[2]}"):
-        messagebox.showerror(title='Ошибка', message='Такая точка уже добавлена.')
+    # if find_in_listbox(root.dots_list, [items[1], items[2], items[3]]):
+    #     messagebox.showerror(title='Ошибка', message='Такая точка уже добавлена.')
+    # else:
+    ind = 0
+    if ACTION == ADD:
+        pass
     else:
+        ind = IND_TO_EDIT
+        root.dots_list.delete(ind)
 
-        ind = 0
-        if ACTION == ADD:
-            ind = 0
-        else:
-            ind = IND_TO_EDIT
-            root.dots_list.delete(ind)
+    root.dots_list.insert(ind, f"{items[0]} ; {items[1]} ; {items[2]} ; {items[3]}")
 
-        root.dots_list.insert(ind, f"{items[0]} ; {items[1]} ; {items[2]}")
+    dot_win.destroy()
 
-        dot_win.destroy()
-    
 
     root.check_list_box()
+    root.dot_num += 1
+
+
+def scale_dot(x, y, x_off, y_off, scale):
+    return (int(scale * (x - x_off) + CANVAS_HALF_WIDTH), int(-scale * (y - y_off) + CANVAS_HALF_HEIGHT))

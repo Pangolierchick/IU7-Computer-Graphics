@@ -26,12 +26,13 @@ class UnsolvableProblem(GeomError):
 
 class myPoint:
     def __init__(self, coord:tuple, set_num:int, ind:int, ) -> None:
-        self.sy_point = sy.Point(coord[0], coord[1])
+        self.sy_point = sy.Point(coord[0], coord[1], evaluate=False)
         self.ind = int(ind)
         self.set_num = int(set_num)
 
 class Picture:
-    def __init__(self, circle1:sy.Circle, circle2:sy.Circle, tangent1:tuple, tangent2:tuple, i_c:tuple):
+    area = None
+    def __init__(self, circle1, circle2, tangent1:tuple, tangent2:tuple, i_c:tuple):
         self.tangent1 = tangent1
         self.tangent2 = tangent2
 
@@ -40,21 +41,22 @@ class Picture:
 
         self.i_p = i_c
 
-        self.get_area()
+        # self.get_area()
 
     def get_area(self) -> float:
-        left_quad_area = sy.Polygon(self.circle1.center, self.tangent1[0], sy.Point(self.i_p[0], self.i_p[1]), self.tangent2[0]).area
-        
-        right_quad_area = sy.Polygon(self.circle2.center, self.tangent1[1], sy.Point(self.i_p[0], self.i_p[1]), self.tangent2[1]).area
+        if (self.area is not None):
+            return self.area
+
+        left_quad_area = quadrangle_area(self.circle1.center, self.tangent1[0], sy.Point(self.i_p[0], self.i_p[1]), self.tangent2[0])
+        right_quad_area = quadrangle_area(self.circle2.center, self.tangent1[1], sy.Point(self.i_p[0], self.i_p[1]), self.tangent2[1])
 
         log.debug(f'coord1 {self.tangent1[0]} {self.tangent2[0]} {self.circle1.center} {sy.Point(self.i_p[0], self.i_p[1])}')
         log.debug(f'coord2 {self.tangent1[1]} {self.tangent2[1]} {self.circle2.center} {sy.Point(self.i_p[0], self.i_p[1])}')
 
         log.info(f"Area: {left_quad_area} + {right_quad_area} = {left_quad_area + right_quad_area}")
-        
-        # sy.Polygon(picture.tangent1[1], picture.tangent2[1], picture.circle2.center, sy.Point(picture.i_p[0], picture.i_p[1])).area
 
-        self.area = left_quad_area + right_quad_area 
+        self.area = abs(left_quad_area - right_quad_area)
+
         return self.area
 
 class myCircle(sy.Circle):
@@ -64,16 +66,34 @@ class myCircle(sy.Circle):
         self.dots = [dot1, dot2, dot3]
 
 
+class Vector:
+    def __init__(self, dot1, dot2):
+        self.x = dot2.x - dot1.x
+        self.y = dot2.y - dot1.y
+    
+    def mod(self) -> float:
+        return math.sqrt(self.x**2 + (self.y**2))
+    
+    def scalar_prod(self, vec) -> float:
+        return (self.x * vec.x + self.y * vec.y)
+    
+    def cos(self, vec) -> float:
+        return (self.scalar_prod(vec)) / (self.mod() * vec.mod())
+    
+    def sin(self, vec) -> float:
+        return math.sqrt(1 - self.cos(vec)**2)
+
+
 def get_dots(dots_table:list) -> list:
     dots_1 = []
     dots_2 = []
 
-    for ind, record in enumerate(dots_table): # FIXME
+    for record in dots_table:
         fields = record.split(" ; ")
+
+        dot = myPoint((fields[1], fields[2]), fields[3], fields[0])
         
-        dot = myPoint((fields[0], fields[1]), fields[2], ind)
-        
-        if int(fields[2]) == 1:
+        if int(fields[3]) == 1:
             dots_1.append(dot)
         else:
             dots_2.append(dot)
@@ -83,12 +103,10 @@ def get_dots(dots_table:list) -> list:
 def find_circles(dots_list:tuple) -> list:
     circles = []
     for pos_circle in combinations(dots_list, 3):
-        try:
-            circle = myCircle(pos_circle[0].sy_point, pos_circle[1].sy_point, pos_circle[2].sy_point)
-        except sy.GeometryError:
-            continue
-
-        circles.append(circle)
+        circle = myCircle(pos_circle[0].sy_point, pos_circle[1].sy_point, pos_circle[2].sy_point)
+        
+        if (type(circle) == myCircle):
+            circles.append(circle)
     
     return circles
 
@@ -186,8 +204,14 @@ def solve_problem(dots_table:list) -> Picture:
     min_area = pictures[0]
 
     for picture in pictures[1:]:
-        if picture.area() < min_area.area():
+        if picture.get_area() < min_area.get_area():
             min_area = picture
     
     return min_area
 
+
+def quadrangle_area(a, b, c, d):
+    d1 = Vector(a, c)
+    d2 = Vector(b, d)
+
+    return d1.mod() * d2.mod() * d1.sin(d2) / 2
