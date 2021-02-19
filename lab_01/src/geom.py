@@ -63,6 +63,7 @@ class myCircle(sy.Circle):
     def __init__(self, dot1, dot2, dot3):
         super().__init__()
         
+    def set_points(self, dot1, dot2, dot3):
         self.dots = [dot1, dot2, dot3]
 
 
@@ -91,6 +92,8 @@ def get_dots(dots_table:list) -> list:
     for record in dots_table:
         fields = record.split(" ; ")
 
+        print(fields)
+        print('field', fields[0])
         dot = myPoint((fields[1], fields[2]), fields[3], fields[0])
         
         if int(fields[3]) == 1:
@@ -106,8 +109,9 @@ def find_circles(dots_list:tuple) -> list:
         circle = myCircle(pos_circle[0].sy_point, pos_circle[1].sy_point, pos_circle[2].sy_point)
         
         if (type(circle) == myCircle):
+            circle.set_points(pos_circle[0], pos_circle[1], pos_circle[2])
             circles.append(circle)
-    
+
     return circles
 
 def find_pictures(circles_1:list, circles_2:list) -> list:
@@ -124,7 +128,6 @@ def find_pictures(circles_1:list, circles_2:list) -> list:
     return pictures
 
 def get_x_out(circle:myCircle, x_p:float, y_p:float):
-
     a = (circle.radius**2) * (x_p - circle.center.x)
     b = (circle.radius) * (y_p - circle.center.y)
     c = (math.sqrt((x_p - circle.center.x)**2 + (y_p - circle.center.y)**2 - (circle.radius**2)))

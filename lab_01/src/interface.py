@@ -14,8 +14,12 @@ ROOT_WINDOW = None
 
 DOT_RADIUS = 5
 
-CANVAS_HALF_WIDTH = 312
-CANVAS_HALF_HEIGHT = 250
+CANVAS_HALF_WIDTH = 0.8 * 312
+CANVAS_HALF_HEIGHT = 0.8 * 250
+
+TASK = 'На плоскости заданы два множества точек. Найти пару окружностей, каждые из которых проходят хотя бы через три различные точки \
+        одного и того же множества (окружности строятся на точках разных множеств) таких, что разность площадей четырехугольников, образованных\
+        центрами окружностей, точками касания внутренних общих касательных и точки пересечения касательных, минимальна. Сделать в графическом режиме ввод изображения'
 
 class RootWindow():
     main_window = None
@@ -31,6 +35,7 @@ class RootWindow():
         self.main_window.geometry("800x520+298+48")
         self.main_window.resizable(0, 0)
         self.setup_main_window()
+        messagebox.showinfo(title='Условие задачи', message=TASK)
 
     def mainloop(self):
         self.main_window.mainloop()
@@ -85,9 +90,20 @@ class RootWindow():
         self.mainCanvas.delete('all')
         dots = self.get_dots_from_table()
 
-        min_pic = g.solve_problem(self.dots_list.get(0, tk.END))
 
+        try:
+            min_pic = g.solve_problem(self.dots_list.get(0, tk.END))
+        except g.NotEnoughDots:
+            messagebox.showerror(title='Ошибка', message='Ошибка: задача не может быть решена. Недостаточно точек (минимум 3 во мн. 1 и 3 во мн. 2)')
+            return
+        except g.NotEnoughCircles:
+            messagebox.showerror(title='Ошибка', message='Ошибка: задача не может быть решена. Не было найдено достаточно окружностей')
+            return
+        except g.UnsolvableProblem:
+            messagebox.showerror(title='Ошибка', message='Ошибка: задача не может быть решена. Не было найдено окружностей, для которых можно построить касательные')
+            return
 
+        
         x_offset = min_pic.i_p[0]
         y_offset = min_pic.i_p[1]
 
@@ -158,16 +174,25 @@ class RootWindow():
         self.mainCanvas.create_line(c2_x, c2_y, t1_2_x, t1_2_y, width=2)
         self.mainCanvas.create_line(c2_x, c2_y, t2_2_x, t2_2_y, width=2)
 
-        user_dots_1 = list(map(lambda x: scale_dot(x.x, x.y, x_offset, y_offset, scale), min_pic.circle1.dots))
-        user_dots_2 = list(map(lambda x: scale_dot(x.x, x.y, x_offset, y_offset, scale), min_pic.circle2.dots))
+        user_dots_1 = list(map(lambda x: scale_dot(x.sy_point.x, x.sy_point.y, x_offset, y_offset, scale), min_pic.circle1.dots))
+        user_dots_2 = list(map(lambda x: scale_dot(x.sy_point.x, x.sy_point.y, x_offset, y_offset, scale), min_pic.circle2.dots))
 
+        ind = 0
         for dot in (user_dots_1):
+            self.mainCanvas.create_text(dot[0] - 20, dot[1] + 20, text=f'{min_pic.circle1.dots[ind].ind}')
             self.mainCanvas.create_oval(dot[0] - DOT_RADIUS, dot[1] + DOT_RADIUS, dot[0] + DOT_RADIUS, dot[1] - DOT_RADIUS, fill='green')
+            ind += 1
         
+        ind = 0
         for dot in (user_dots_2):
+            self.mainCanvas.create_text(dot[0] - 20, dot[1] + 20, text=f'{min_pic.circle2.dots[ind].ind}')
             self.mainCanvas.create_oval(dot[0] - DOT_RADIUS, dot[1] + DOT_RADIUS, dot[0] + DOT_RADIUS, dot[1] - DOT_RADIUS, fill='purple')
+            ind += 1
 
-        print('area', float(min_pic.area))
+        # print('area', float(min_pic.get_area()))
+
+        messagebox.showinfo(title='Ответ', message=f'Ответ: минимальная разность площадей четырехугольников равна {float(min_pic.get_area()):.4}. Изображение Вы можете увидеть на экране. \
+                                                     Точки мн. 1 изображены зеленым цветом, мн. 2 -- фиолетовым. Окружность мн. 1 красным цветом -- мн. 2 синим. Касательные -- черным.')
 
 
     def add_dot(self):
@@ -201,6 +226,7 @@ class RootWindow():
         ind = self.dots_list.curselection()[0]
         self.dots_list.delete(ind)
         self.check_list_box()
+        self.recheck_listbox()
         self.dot_num -= 1
 
     def clear_table(self):
@@ -218,6 +244,21 @@ class RootWindow():
 
         self.edit_dot_btn.configure(state=state)
         self.del_dot_btn.configure(state=state)
+    
+    def recheck_listbox(self):
+        old = self.dots_list.get(0, tk.END)
+        ind = len(old)
+        new = []
+
+        for i in old:
+            rec = i.split(' ; ')[1:]
+            new.append(f'{ind} ; {rec[0]} ; {rec[1]} ; {rec[2]}')
+            ind -= 1
+        
+        self.dots_list.delete(0, tk.END)
+
+        for i, e in enumerate(new):
+            self.dots_list.insert(i, e)
 
 
 class AddDotWin(tk.Toplevel):
@@ -296,6 +337,7 @@ def conf_dot(root:RootWindow, dot_win:AddDotWin):
 
 
     root.check_list_box()
+    root.recheck_listbox()
     root.dot_num += 1
 
 
