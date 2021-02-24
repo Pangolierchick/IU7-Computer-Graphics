@@ -52,13 +52,13 @@ class mainWindow(tk.Tk):
         self.y_center = tk.Entry(self, width=10)
         self.y_center.place(x=225, y=410)
 
-        tk.Label(self, text='ПЕРЕНОС').place(x=50, y=440)
+        tk.Label(self, text='ПЕРЕНОС').place(x=160, y=450)
         tk.Label(self, text='x').place(x=125, y=470)
         tk.Label(self, text='y').place(x=270, y=470)
         self.move_x_center = tk.Entry(self, width=10)
-        self.x_center.place(x=75, y=500)
-        self.y_center = tk.Entry(self, width=10)
-        self.y_center.place(x=225, y=500)
+        self.move_x_center.place(x=75, y=500)
+        self.move_y_center = tk.Entry(self, width=10)
+        self.move_y_center.place(x=225, y=500)
 
         default = tk.Button(self, text='Вернуть в исходное состояние')
         default.place(x=80, y=550)
@@ -69,7 +69,3 @@ class mainWindow(tk.Tk):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=2)
-
-        # self.grid_rowconfigure(0, weight=1)
-        # self.grid_rowconfigure(0, weight=1)
-        # self.grid_columnconfigure(0, weight=1)
