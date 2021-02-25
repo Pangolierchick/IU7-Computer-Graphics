@@ -1,4 +1,6 @@
 import interface
+import geom as g
+import math
 
 def main():
     mw = interface.mainWindow()
