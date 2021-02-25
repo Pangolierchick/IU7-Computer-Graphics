@@ -47,8 +47,8 @@ class Point():
         '''
         scale dot's coord with x and y from (cx, yx)
         '''
-        self.x = cx + self.x + x * (self.x - cx)
-        self.y = cy + self.y + y * (self.y - cx)
+        self.x = cx + kx * (self.x - cx)
+        self.y = cy + ky * (self.y - cy)
     
     def __str__(self) -> str:
         return f'({round(self.x, 4)}, {round(self.y, 4)}, {round(self.z, 4)})'
@@ -153,5 +153,46 @@ class Picture():
     def rotate(self, angle:float, cx:float=0, cy:float=0):
         for ind, val in enumerate(self.picture_dots):
             val.rotate(angle, cx, cy)
+        
 
+    def rh_circle_wrap(self):
+        '''
+        Conveniant wrap around getRightHalfCircle for matplotlib
+        '''
+        circle = self.getRightHalfCircle()
 
+        ux = [i.x for i in circle[:CIRCLE_APPROXIMATION_DOTS]]
+        uy = [i.y for i in circle[:CIRCLE_APPROXIMATION_DOTS]]
+
+        dx = [i.x for i in circle[CIRCLE_APPROXIMATION_DOTS:]]
+        dy = [i.y for i in circle[CIRCLE_APPROXIMATION_DOTS:]]
+    
+        return [ux, uy], [dx, dy]
+    
+    def lh_circle_wrap(self):
+        '''
+        Conveniant wrap around getLeftHalfCircle for matplotlib
+        '''
+        circle = self.getLeftHalfCircle()
+
+        ux = [i.x for i in circle[:CIRCLE_APPROXIMATION_DOTS]]
+        uy = [i.y for i in circle[:CIRCLE_APPROXIMATION_DOTS]]
+
+        dx = [i.x for i in circle[CIRCLE_APPROXIMATION_DOTS:]]
+        dy = [i.y for i in circle[CIRCLE_APPROXIMATION_DOTS:]]
+    
+        return [ux, uy], [dx, dy]
+    
+    def center_circle_wrap(self):
+        '''
+        Conveniant wrap around getCenterCircle for matplotlib
+        '''
+        circle = self.getCenterCircle()
+
+        ux = [i.x for i in circle[:CIRCLE_APPROXIMATION_DOTS]]
+        uy = [i.y for i in circle[:CIRCLE_APPROXIMATION_DOTS]]
+
+        dx = [i.x for i in circle[CIRCLE_APPROXIMATION_DOTS:]]
+        dy = [i.y for i in circle[CIRCLE_APPROXIMATION_DOTS:]]
+    
+        return [ux, uy], [dx, dy]
