@@ -103,8 +103,8 @@ class mainWindow(tk.Tk):
 
     def move_picture(self):
         try:
-            x = int(self.move_x.get())
-            y = int(self.move_y.get())
+            x = float(self.move_x.get())
+            y = float(self.move_y.get())
         except ValueError:
             messagebox.showerror(title='Ошибка', message='Неправильный ввод координат смещения')
             return
@@ -116,9 +116,9 @@ class mainWindow(tk.Tk):
 
     def rotate_picture(self):
         try:
-            angle = -1 * math.radians(float(self.rotate_angle.get()))
-            cx = int(self.x_center.get())
-            cy = int(self.y_center.get())
+            angle = math.radians(float(self.rotate_angle.get()))
+            cx = float(self.x_center.get())
+            cy = float(self.y_center.get())
         except ValueError:
             messagebox.showerror(title='Ошибка', message='Неправильный ввод центра поворота или угла')
             return
@@ -136,8 +136,8 @@ class mainWindow(tk.Tk):
         try:
             kx = float(self.x_scale.get())
             ky = float(self.y_scale.get())
-            cx = int(self.x_center.get())
-            cy = int(self.y_center.get())
+            cx = float(self.x_center.get())
+            cy = float(self.y_center.get())
         except ValueError:
             messagebox.showerror(title='Ошибка', message='Неправильный ввод центра масштабирования или коэффициентов масштабирования')
             return

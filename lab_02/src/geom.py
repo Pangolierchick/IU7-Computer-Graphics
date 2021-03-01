@@ -4,7 +4,7 @@ import math as m
 import functools
 
 
-CIRCLE_APPROXIMATION_DOTS = 25
+CIRCLE_APPROXIMATION_DOTS = 100
 
 @functools.lru_cache    
 def up_circle(x):
