@@ -28,7 +28,7 @@ class Point():
     
     def move(self, x:float, y:float, z:float=0):
         '''
-        Adding x, y, z to dot's coordinatesx
+        Adding x, y, z to dot's coordinates
         '''
         self.x += x
         self.y += y
@@ -36,7 +36,7 @@ class Point():
     
     def rotate(self, angle:float, cx:float=0, cy:float=0):
         '''
-        rotate dot to angle from (cx, yx)
+        rotate dot to angle around (cx, yx)
         '''
         copy_x = self.x
         copy_y = self.y

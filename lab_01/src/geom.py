@@ -1,3 +1,4 @@
+import functools
 import math
 import sympy as sy
 import interface as ie
@@ -157,7 +158,7 @@ def get_x_inner(circle:myCircle, x_p:float, y_p:float):
 def get_y_inner(circle:myCircle, x_p:float, y_p:float):
     return get_y_out(circle, x_p, y_p)
 
-
+@functools.lru_cache
 def find_circles_tangent(circle1:myCircle, circle2:myCircle) -> tuple:
     # r0 -> a, b
     # r1 -> c, d
@@ -171,9 +172,11 @@ def find_circles_tangent(circle1:myCircle, circle2:myCircle) -> tuple:
 
     log.info(f'Tangents intersection ({x_p}, {y_p})')
 
-    xt_1, xt_2 = get_x_out(circle1, x_p, y_p)
-    yt_1, yt_2 = get_y_out(circle1, x_p, y_p)
-
+    try:
+        xt_1, xt_2 = get_x_out(circle1, x_p, y_p)
+        yt_1, yt_2 = get_y_out(circle1, x_p, y_p)
+    except Exception as e:
+        return tuple()
 
     xt_3, xt_4 = get_x_inner(circle2, x_p, y_p)
     yt_3, yt_4 = get_y_inner(circle2, x_p, y_p)
@@ -212,7 +215,7 @@ def solve_problem(dots_table:list) -> Picture:
     
     return min_area
 
-
+@functools.lru_cache
 def quadrangle_area(a, b, c, d):
     d1 = Vector(a, c)
     d2 = Vector(b, d)

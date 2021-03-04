@@ -12,7 +12,8 @@ ACTION = None
 IND_TO_EDIT = 0
 ROOT_WINDOW = None
 
-DOT_RADIUS = 5
+DOT_RADIUS = 3
+TEXT_RAD = 15
 
 CANVAS_HALF_WIDTH = 0.8 * 312
 CANVAS_HALF_HEIGHT = 0.8 * 250
@@ -133,7 +134,7 @@ class RootWindow():
         right = max(some_x_dots)
         left  = min(some_x_dots)
         up    = max(some_y_dots)
-        down  = max(some_y_dots)
+        down  = min(some_y_dots)
 
 
         x_scale_r = abs(CANVAS_HALF_WIDTH // right) if right != 0 else inf
@@ -142,7 +143,9 @@ class RootWindow():
         y_scale_u = abs(CANVAS_HALF_HEIGHT // up) if up != 0 else inf
         y_scale_d = abs(CANVAS_HALF_HEIGHT // down) if down != 0 else inf
 
-        scale = min(x_scale_r, x_scale_l, y_scale_u, y_scale_d) - 1
+        scale = min(x_scale_r, x_scale_l, y_scale_u, y_scale_d)
+
+        print(scale)
 
         c1_x = int(scale * c1x + CANVAS_HALF_WIDTH)
         c1_y = int(-scale * c1y + CANVAS_HALF_HEIGHT)
@@ -179,13 +182,13 @@ class RootWindow():
 
         ind = 0
         for dot in (user_dots_1):
-            self.mainCanvas.create_text(dot[0] - 20, dot[1] + 20, text=f'{min_pic.circle1.dots[ind].ind}')
+            self.mainCanvas.create_text(dot[0] - TEXT_RAD, dot[1] + TEXT_RAD, text=f'{min_pic.circle1.dots[ind].ind}')
             self.mainCanvas.create_oval(dot[0] - DOT_RADIUS, dot[1] + DOT_RADIUS, dot[0] + DOT_RADIUS, dot[1] - DOT_RADIUS, fill='green')
             ind += 1
         
         ind = 0
         for dot in (user_dots_2):
-            self.mainCanvas.create_text(dot[0] - 20, dot[1] + 20, text=f'{min_pic.circle2.dots[ind].ind}')
+            self.mainCanvas.create_text(dot[0] - TEXT_RAD, dot[1] + TEXT_RAD, text=f'{min_pic.circle2.dots[ind].ind}')
             self.mainCanvas.create_oval(dot[0] - DOT_RADIUS, dot[1] + DOT_RADIUS, dot[0] + DOT_RADIUS, dot[1] - DOT_RADIUS, fill='purple')
             ind += 1
 
