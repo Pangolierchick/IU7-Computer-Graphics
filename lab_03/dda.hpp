@@ -2,4 +2,4 @@
 
 #include "line.hpp"
 
-line_t dda(dot_t& sd, dot_t& ed, color_t& color);
+line_t dda(dot_t& sd, dot_t& ed, Color& color);

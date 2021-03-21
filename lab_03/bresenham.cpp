@@ -9,7 +9,7 @@ static inline int signum(double val) {
     return 1;
 }
 
-line_t bresenham_int(dot_t& sd, dot_t& ed, color_t& color) {
+line_t bresenham_int(dot_t& sd, dot_t& ed, Color& color) {
     auto x_start = sd.getX();
     auto y_start = sd.getY();
     
@@ -70,26 +70,26 @@ line_t bresenham_int(dot_t& sd, dot_t& ed, color_t& color) {
 }
 
 
-line_t bresenham_double(dot_t& sd, dot_t& ed, color_t& color) {
-    auto x_start = sd.getX();
-    auto y_start = sd.getY();
+line_t bresenham_double(dot_t& sd, dot_t& ed, Color& color) {
+    double x_start = sd.getX();
+    double y_start = sd.getY();
     
-    auto x_end = ed.getX();
-    auto y_end = ed.getY();
+    double x_end = ed.getX();
+    double y_end = ed.getY();
 
-    int dx = x_end - x_start;
-    int dy = y_end - y_start;
+    double dx = x_end - x_start;
+    double dy = y_end - y_start;
 
-    auto x_sign = signum(dx);
-    auto y_sign = signum(dy);
+    double x_sign = signum(dx);
+    double y_sign = signum(dy);
 
     dx = abs(dx);
     dy = abs(dy);
 
-    int xx;
-    int xy;
-    int yx;
-    int yy;
+    double xx;
+    double xy;
+    double yx;
+    double yy;
 
     if (dx > dy) {
         xx = x_sign;
@@ -104,17 +104,16 @@ line_t bresenham_double(dot_t& sd, dot_t& ed, color_t& color) {
         yy = 0;
     }
 
-    auto m = dy / dx;
-    auto e = m - 0.5;
-    auto y = 0;
+    double m = dy / dx;
+    double e = m - 0.5;
+    double y = 0;
 
     std::vector<dot_t> dots;
 
-    int x = 0;
+    double x = 0;
     while (x < dx + 1) {
-        dot_t dot(x_start + x * xx + y * yx, y_start + x * xy + y * yy, color);
 
-        dots.push_back(dot);
+        dots.emplace_back(x_start + x * xx + y * yx, y_start + x * xy + y * yy, color);
 
         if (e >= 0) {
             y++;
@@ -131,26 +130,26 @@ line_t bresenham_double(dot_t& sd, dot_t& ed, color_t& color) {
     return line;
 }
 
-line_t bresenham_antialiased(dot_t& sd, dot_t& ed, color_t& color) {
-    auto x_start = sd.getX();
-    auto y_start = sd.getY();
+line_t bresenham_antialiased(dot_t& sd, dot_t& ed, Color& color) {
+    double x_start = sd.getX();
+    double y_start = sd.getY();
     
-    auto x_end = ed.getX();
-    auto y_end = ed.getY();
+    double x_end = ed.getX();
+    double y_end = ed.getY();
 
-    int dx = x_end - x_start;
-    int dy = y_end - y_start;
+    double dx = x_end - x_start;
+    double dy = y_end - y_start;
 
-    auto x_sign = signum(dx);
-    auto y_sign = signum(dy);
+    double x_sign = signum(dx);
+    double y_sign = signum(dy);
 
     dx = abs(dx);
     dy = abs(dy);
 
-    int xx;
-    int xy;
-    int yx;
-    int yy;
+    double xx;
+    double xy;
+    double yx;
+    double yy;
 
     if (dx > dy) {
         xx = x_sign;
@@ -165,21 +164,20 @@ line_t bresenham_antialiased(dot_t& sd, dot_t& ed, color_t& color) {
         yy = 0;
     }
 
-    auto m = dy / dx;
-    auto e = 0.5;
-    auto w = 1;
-    auto y = 0;
+    double m = dy / dx;
+    double e = 0.5;
+    double w = 1;
+    double y = 0;
 
     std::vector<dot_t> dots;
 
-    int x = 0;
+    double x = 0;
     while (x < dx + 1) {
-        color_t new_color(0xff * e, 0xff * e, 0xff);
-        new_color += color;
+        Color new_color(255.0 * e, 255.0 * e, 255.0);
 
-        dot_t dot(x_start + x * xx + y * yx, y_start + x * xy + y * yy, new_color);
-
-        dots.push_back(dot);
+        // dot_t dot(x_start + x * xx + y * yx, y_start + x * xy + y * yy, color + new_color);
+        
+        dots.emplace_back(x_start + x * xx + y * yx, y_start + x * xy + y * yy, color + new_color);
 
         if (e >= w - m) {
             y++;

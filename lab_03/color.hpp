@@ -1,28 +1,66 @@
 #pragma once
 
-using color_t = struct color;
+typedef enum colors_presets {
+    PURPLE,
+    BLACK,
+    BLUE,
+    BACKGROUND
+} colors_presets_t;
 
-struct color {
+
+class Color {
     public:
-        color(int r, int g, int b): red(r), green(g), blue(b) {}
-        color(const color& c): red(c.red), green(c.green), blue(c.blue) {}
-        color(color&& c): red(c.red), green(c.green), blue(c.blue) {}
+        Color(): red(0), green(0), blue(0) {}
+        Color(int r, int g, int b): red(r), green(g), blue(b) {}
 
-        color_t operator+=(const color_t& c) {
+        Color operator+=(const Color& c) {
             this->red += c.red;
             this->green += c.green;
             this->blue += c.blue;
 
+            checkForExceed(*this);
+
             return *this;
+        }
+
+        Color operator+(const Color& c) {
+            Color temp(0, 0, 0);
+
+            temp.red = red + c.red;
+            temp.green = green + c.green;
+            temp.blue = blue + c.blue;
+
+            checkForExceed(temp);
+
+            return temp;
         }
 
         int Red() { return red; }
         int Green() { return green; }
         int Blue() { return blue; }
 
+        void setRed(int v) { red = v; checkForExceed(*this); }
+        void setGreen(int v) { green = v; checkForExceed(*this); }
+        void setBlue(int v) { blue = v; checkForExceed(*this); }
+    
+        void presetColor(colors_presets_t c);
+
     private:
+        void checkForExceed(Color &c) {
+            if (c.red > 255)
+                c.red = 255;
+
+            if (c.green > 255)
+                c.green = 255;
+
+            if (c.blue > 255)
+                c.blue = 255;
+        }
         int red;
         int green;
         int blue;
 };
+
+
+
 

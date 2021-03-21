@@ -30,6 +30,14 @@ set(PROJECT_SOURCES
         bresenham.cpp
         bresenham.hpp
         color.hpp
+        wu.cpp
+        wu.hpp
+        commands.hpp
+        uimanager.cpp
+        uimanager.hpp
+        errors.hpp
+        color.cpp
+        logger.h
 )
 
 add_executable(lab_03
