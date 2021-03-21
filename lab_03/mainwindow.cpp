@@ -1,4 +1,3 @@
-#include <iostream>
 #include <QApplication>
 #include "mainwindow.hpp"
 #include "./ui_mainwindow.h"
@@ -11,8 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    color = PURPLE;
 
     QGraphicsScene *scene = new QGraphicsScene(0, 0, 720, 600, this);
     ui->graphicsView->setScene(scene);
@@ -49,12 +46,30 @@ void MainWindow::on_draw_line_button_clicked()
 
 void MainWindow::on_draw_bundle_button_clicked()
 {
+    action_t action;
+    commands_t cmd = DRAW_BUNDLE;
+    drawBundle_t drawbundle;
 
+    drawbundle.radius = ui->bundle_radius_spin->value();
+    drawbundle.angle = ui->bundle_step_spin->value();
+    drawbundle.color = get_color();
+
+    action.cmd = cmd;
+    action.bundleParams = drawbundle;
+    drawScene_t draw_scene(ui->graphicsView->scene());
+    action.method = (drawMethods_t) ui->draw_method->currentIndex();
+    manager(draw_scene, action);
 }
 
 void MainWindow::on_clear_bundle_button_clicked()
 {
+    action_t action;
+    commands_t cmd = CLEAN_SCREEN;
+    drawScene_t draw_scene(ui->graphicsView->scene());
+    action.cmd = cmd;
 
+
+    manager(draw_scene, action);
 }
 
 
@@ -63,17 +78,6 @@ void MainWindow::on_compare_algos_button_clicked()
 
 }
 
-
 colors_presets_t MainWindow::get_color() {
-    return BLUE;
-}
-
-void MainWindow::on_use_purple_color_clicked()
-{
-    color = PURPLE;
-}
-
-void MainWindow::on_use_background_color_clicked()
-{
-    color = BACKGROUND;
+    return (colors_presets_t) ui->colorBox->currentIndex();
 }

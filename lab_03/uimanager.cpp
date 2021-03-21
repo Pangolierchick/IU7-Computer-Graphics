@@ -13,25 +13,27 @@ int manager(drawScene_t& scene, action_t& action) {
 
     switch (action.cmd) {
         case DRAW_LINE: {
-            auto x1 = action.lineParams.d1.getX();
-            auto y1 = action.lineParams.d1.getX();
-            auto x2 = action.lineParams.d2.getX();
-            auto y2 = action.lineParams.d2.getX();
+            if (action.method == LIBRARY) {
+                drawLibLine(scene, action.lineParams);
+            } else {
+                line_t line = drawLineManager(action.method, action.lineParams);
+                drawLine(scene, line);
+            }
 
-            DBG_PRINT("Drawing line (%lf, %lf) (%lf, %lf)\n", x1, y1, x2, y2);
-            cleanScreen(scene);
-            line_t line = drawLineManager(action.method, action.lineParams);
-            drawLine(scene, line);
             break;
         }
         
         case DRAW_BUNDLE: {
-
+            if (action.method == LIBRARY) {
+                drawLibBundle(scene, action.bundleParams);
+            } else {
+                drawBundle(scene, action.bundleParams, action.method);
+            }
             break;
         }
         
         case CLEAN_SCREEN: {
-
+            cleanScreen(scene);
             break;
         }
         
@@ -60,7 +62,6 @@ line_t drawLineManager(drawMethods_t method, drawLine_t& line) {
     switch (method) {
         case DDA: {
             line_t new_line = dda(line.d1, line.d2, color);
-            INFO_PRINT("DDA DONE\n");
             return new_line;
         }
         

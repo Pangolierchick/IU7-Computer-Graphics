@@ -14,8 +14,8 @@ struct drawLine {
 };
 
 struct drawBundle {
-    int radius;
-    int angle;
+    double radius;
+    double angle;
     colors_presets_t color;
 };
 
@@ -46,4 +46,7 @@ using drawBundle_t = struct drawBundle;
 
 void drawPixel(drawScene_t &scene, dot_t& dot);
 void drawLine(drawScene_t &scene, const line_t& line);
+void drawLibLine(drawScene_t &scene, drawLine_t lineParams);
 void cleanScreen(drawScene_t &scene);
+void drawBundle(drawScene_t &scene, drawBundle_t &bundleParams, drawMethods_t method);
+void drawLibBundle(drawScene_t &scene, drawBundle_t &bundleParams);

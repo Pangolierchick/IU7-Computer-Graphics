@@ -26,11 +26,7 @@ private slots:
 
     void on_compare_algos_button_clicked();
 
-    void on_use_purple_color_clicked();
-    void on_use_background_color_clicked();
-
 private:
-    colors_presets_t color;
     colors_presets_t get_color();
     Ui::MainWindow *ui;
 };
