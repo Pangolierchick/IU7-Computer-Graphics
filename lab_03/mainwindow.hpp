@@ -19,6 +19,7 @@ public:
 
 private slots:
     void on_draw_line_button_clicked();
+    void resizeEvent(QResizeEvent* e);
 
     void on_draw_bundle_button_clicked();
 

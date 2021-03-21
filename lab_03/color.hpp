@@ -2,8 +2,8 @@
 
 typedef enum colors_presets {
     PURPLE,
-    BLACK,
     BLUE,
+    GREEN,
     BACKGROUND
 } colors_presets_t;
 

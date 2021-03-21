@@ -131,7 +131,7 @@ void drawBundle(drawScene_t &scene, drawBundle_t &bundleParams, drawMethods_t me
     std::vector<line_t> lines;
     std::vector<dot_t> right_dots;
 
-    lines.resize(iters);
+    lines.resize(iters + 10);
 
     double left_c  = (draw_scene->width() / 2.0)  + bundleParams.radius;
     double right_c = (draw_scene->height() / 2.0) + bundleParams.radius;
@@ -165,7 +165,6 @@ void drawLibBundle(drawScene_t &scene, drawBundle_t &bundleParams) {
     Color c;
     c.presetColor(bundleParams.color);
 
-    auto draw_scene = scene.getScene();
     dot_t ds(0, 0, c);
     dot_t de(bundleParams.radius, bundleParams.radius, c);
 

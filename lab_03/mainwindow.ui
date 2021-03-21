@@ -154,12 +154,12 @@
           </item>
           <item>
            <property name="text">
-            <string>Черный</string>
+            <string>Синий</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Синий</string>
+            <string>Зеленый</string>
            </property>
           </item>
           <item>
@@ -471,13 +471,23 @@
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
              <widget class="QDoubleSpinBox" name="bundle_radius_spin">
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
               <property name="maximum">
                <double>10000.000000000000000</double>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="bundle_step_spin"/>
+             <widget class="QDoubleSpinBox" name="bundle_step_spin">
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>360.000000000000000</double>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>

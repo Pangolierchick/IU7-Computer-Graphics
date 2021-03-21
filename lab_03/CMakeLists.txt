@@ -9,12 +9,11 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CXX /usr/bin/clang++)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenMP REQUIRED)
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)
 
 add_definitions(-Wall -Wextra)
 
@@ -41,10 +40,13 @@ set(PROJECT_SOURCES
         errors.hpp
         color.cpp
         logger.h
+        compare.cpp
+        compare.hpp
+        timer.hpp
 )
 
 add_executable(lab_03
     ${PROJECT_SOURCES}
 )
 
-target_link_libraries(lab_03 PRIVATE Qt5::Widgets PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(lab_03 PRIVATE Qt5::Widgets Qt5::Charts PRIVATE OpenMP::OpenMP_CXX)

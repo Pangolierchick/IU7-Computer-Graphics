@@ -4,6 +4,7 @@
 #include "uimanager.hpp"
 #include "commands.hpp"
 #include "logger.h"
+#include "compare.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -12,12 +13,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     QGraphicsScene *scene = new QGraphicsScene(0, 0, 720, 600, this);
+    ui->graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
     ui->graphicsView->setScene(scene);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::resizeEvent(QResizeEvent* e)
+{
+    ui->graphicsView->fitInView(ui->graphicsView->scene()->sceneRect(), Qt::KeepAspectRatio);
 }
 
 void MainWindow::on_draw_line_button_clicked()
@@ -42,6 +49,7 @@ void MainWindow::on_draw_line_button_clicked()
     action.lineParams = linep;
 
     manager(draw_scene, action);
+    resizeEvent(nullptr);
 }
 
 void MainWindow::on_draw_bundle_button_clicked()
@@ -68,14 +76,15 @@ void MainWindow::on_clear_bundle_button_clicked()
     drawScene_t draw_scene(ui->graphicsView->scene());
     action.cmd = cmd;
 
-
     manager(draw_scene, action);
 }
 
 
 void MainWindow::on_compare_algos_button_clicked()
 {
-
+    printf("COMPARING\n");
+    auto chart = getChartView();
+    chart->show();
 }
 
 colors_presets_t MainWindow::get_color() {
