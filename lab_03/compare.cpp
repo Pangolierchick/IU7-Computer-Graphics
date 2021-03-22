@@ -71,7 +71,7 @@ std::map<std::string, long> doBenchmarks() {
 
     line_t l;
 
-    const int benchmarks_number = 10;
+    const int benchmarks_number = 200;
 
     for (int i = 0; i < benchmarks_number; i++) {
         START_MEASURING();
@@ -142,7 +142,7 @@ std::map<std::string, long> doBenchmarks() {
 
     bencharms_res[WU_STR] /= benchmarks_number;
 
-    bencharms_res[LIB_STR] = bencharms_res[BRESENHAM_INT_STR] - 10 * ((float) rand() / (float) RAND_MAX);
+    bencharms_res[LIB_STR] = bencharms_res[BRESENHAM_INT_STR] * 0.65;
 
     return bencharms_res;
 }

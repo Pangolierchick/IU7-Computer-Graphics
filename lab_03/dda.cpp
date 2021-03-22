@@ -7,7 +7,7 @@ line_t dda(dot_t& sd, dot_t& ed, Color& color) {
     auto dx = ed.getX() - sd.getX();
     auto dy = ed.getY() - sd.getY();
 
-    double l;
+    float l;
 
     if (fabs(dx) > fabs(dy))
         l = fabs(dx);
@@ -17,8 +17,8 @@ line_t dda(dot_t& sd, dot_t& ed, Color& color) {
     dx /= l;
     dy /= l;
 
-    double x = sd.getX();
-    double y = sd.getY();
+    float x = sd.getX();
+    float y = sd.getY();
 
     std::vector<dot_t> dots;
 

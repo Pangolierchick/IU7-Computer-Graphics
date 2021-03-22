@@ -4,44 +4,48 @@
 #include "wu.hpp"
 #include "logger.h"
 
-static double fpart(double x) {
+static float fpart(float x) {
     return x - (int) x;
 }
 
-static double rfpart(double x) {
+static float rfpart(float x) {
     return 1 - fpart(x);
 }
 
-static void wu_swap(double &x, double &y, int steep) {
+static float ipart(float x) {
+    return x - fpart(x);
+}
+
+static float myround(float x) {
+    return ipart(x + 0.5);
+}
+
+static void wu_swap(float &x, float &y, int steep) {
     if (steep) {
         std::swap(x, y);
     }
 }
 
-static void get_endpoints(double x, double y, double m, double *px, double *py) {
-    double x_e = round(x);
-    double y_e = y + (x_e - x) * m;
+static void get_endpoints(float x, float y, float m, float *px, float *py) {
+    float x_e = round(x);
+    float y_e = y + (x_e - x) * m;
 
     *px = round(x_e);
     *py = round(y_e);
 }
 
 line_t wu(dot_t &sd, dot_t &ed, Color &color) {
-    double x_start = sd.getX();
-    double y_start = sd.getY();
+    float x_start = sd.getX();
+    float y_start = sd.getY();
 
-    double x_end = ed.getX();
-    double y_end = ed.getY();
+    float x_end = ed.getX();
+    float y_end = ed.getY();
 
-    double dx = x_end - x_start;
-    double dy = y_end - y_start;
-
-    int steep = fabs(dx) < fabs(dy);
+    const bool steep = abs(y_end - y_start) > abs(x_end - x_start);
 
     if (steep) {
         std::swap(x_start, y_start);
         std::swap(x_end, y_end);
-        std::swap(dx, dy);
     }
 
     if (x_end < x_start) {
@@ -49,100 +53,92 @@ line_t wu(dot_t &sd, dot_t &ed, Color &color) {
         std::swap(y_start, y_end);
     }
 
-
-    DBG_PRINT("xs = %lf\tys = %lf\n", x_start, y_start);
-    double m = dy / dx;
-    double intery = y_start + rfpart(x_start) * m;
-
-    DBG_PRINT("Intery = %lf\n", intery);
+    const float dx = x_end - x_start;
+    const float dy = y_end - y_start;
+    const float gradient = (dx == 0) ? 1 : (dy / dx);
 
     std::vector<dot_t> dots;
 
-    double px;
-    double py;
+    int xpx11;
+    float intery;
 
-    get_endpoints(x_start, y_start, m, &px, &py);
+    {
+        float xend = round(x_start);
+        float yend = y_start + gradient * (xend - x_start);
+        float xgap = rfpart(x_start + 0.5);
+        
+        xpx11 = int(xend);
 
-    double x_s = px + 1;
+        const int ypx11 = ipart(yend);
+        if (steep) {
+            Color c = color;
+            c.setAlpha(255 * rfpart(y_end) * xgap);
+    
+            dots.emplace_back(ypx11, xpx11, c);
+            c.setAlpha(255 * fpart(y_end) * xgap);
+    
+            dots.emplace_back(ypx11 + 1, xpx11, c);
+        } else {
+            Color c = color;
+            c.setAlpha(255 * rfpart(yend) * xgap);
+    
+            dots.emplace_back(xpx11, ypx11, c);
+            c.setAlpha(255 * fpart(yend) * xgap);
+    
+            dots.emplace_back(xpx11 + 1, ypx11, c);
 
-    double y_fract;
-    double y_int_part;
+        }
+        intery = yend + gradient;
+    }
 
-    double y_e = y_start + (round(x_start) - x_start) * m;
-    double x_gap = rfpart((x_start + 0.5));
+    int xpx12;
+    {
+        float xend = round(x_end);
+        float yend = y_end + gradient * (xend - x_end);
+        float xgap = rfpart(x_end + 0.5);
+        
+        xpx12 = int(xend);
+        
+        int ypx12 = ipart(yend);
 
-    double dens1;
-    double dens2;
+        if (steep) {
+            Color c = color;
+            c.setAlpha(255 * rfpart(yend) * xgap);
+            dots.emplace_back(ypx12, xpx12, c);
 
-    dens1 = rfpart(y_e) * x_gap;
-    dens2 = fpart(y_e)  * x_gap;
+            c.setAlpha(255 * fpart(yend) * xgap);
+            dots.emplace_back(ypx12 + 1, xpx12, c);
+        } else {
+            Color c = color;
+            c.setAlpha(255 * rfpart(yend) * xgap);
+            dots.emplace_back(xpx12, ypx12, c);
+            c.setAlpha(255 * fpart(yend) * xgap);
+            dots.emplace_back(xpx12, ypx12 + 1, c);
+        }
+    }
 
+    if (steep) {
+        for (int x = xpx11 + 1; x < xpx12; x++) {
+            Color c = color;
+            
+            c.setAlpha(rfpart(intery) * 255);
+            dots.emplace_back(ipart(intery), x, c);
+            
+            c.setAlpha(255 * fpart(intery));
+            dots.emplace_back(ipart(intery) + 1, x, c);
+            intery += gradient;
+        }
+    } else {
+        for (int x = xpx11 + 1; x < xpx12; x++) {
+            Color c = color;
 
-    Color color1(255.0 * dens2, 255.0 * dens2, 255.0);
-    Color color2(255.0 * dens1, 255.0 * dens1, 255.0);
-
-    wu_swap(px, py, steep);
-
-    DBG_PRINT("px, py %lf %lf\n", px, py);
-
-    dots.emplace_back(px, py, color + color1);
-    dots.emplace_back(px, py, color + color2);
-
-    wu_swap(px, py, steep);
-
-    get_endpoints(x_end, y_end, m, &px, &py);
-
-    double x_e = px;
-
-    y_e = y_end + (round(x_end) - x_end) * m;
-    x_gap = rfpart(x_end + 0.5);
-
-    dens1 = rfpart(y_e) * x_gap;
-    dens2 = fpart(y_e)  * x_gap;
-
-    color1.setRed(255.0 * dens2);
-    color1.setGreen(255.0 * dens2);
-    color1.setBlue(255.0);
-
-    color2.setRed(255.0 * dens1);
-    color2.setGreen(255.0 * dens1);
-    color2.setBlue(255.0);
-
-    wu_swap(px, py, steep);
-
-    DBG_PRINT("px, py %lf %lf\n", px, py);
-
-    dots.emplace_back(px, py, color + color1);
-    dots.emplace_back(px, py, color + color2);
-    wu_swap(px, py, steep);
-
-    DBG_PRINT("xs and xe: %lf %lf\n", x_s, x_e);
-
-    while (x_s < x_e) {
-        double x = x_s;
-        double y = round(intery);
-
-        double dens1 = rfpart(intery) * x_gap;
-        double dens2 = fpart(intery)  * x_gap;
-
-        Color c1(255.0 * dens2, 255.0 * dens2, 255.0);
-        Color c2(255.0 * dens1, 255.0 * dens1, 255.0);
-
-
-        wu_swap(x, y, steep);
-        DBG_PRINT("#1 x_s, y %lf %lf\n", x_s, y);
-        dots.emplace_back(x, y, color + c1);
-
-        y++;
-        DBG_PRINT("#2 x_s, y %lf %lf\n", x_s, y);
-        dots.emplace_back(x, y, color + c2);
-        wu_swap(x, y, steep);
-        y--;
-
-        DBG_PRINT("y = %lf\n", y);
-
-        intery += m;
-        x_s++;
+            c.setAlpha(255 * rfpart(intery));
+            dots.emplace_back(x, ipart(intery), c);
+            
+            c.setAlpha(255 * fpart(intery));
+            dots.emplace_back(x, ipart(intery) + 1, c);
+            intery += gradient;
+        }
     }
 
     line_t line(dots);

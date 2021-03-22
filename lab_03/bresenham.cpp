@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "bresenham.hpp"
 
-static inline int signum(double val) {
+static inline int signum(float val) {
     if (val < 0)
         return -1;
 
@@ -71,25 +71,25 @@ line_t bresenham_int(dot_t& sd, dot_t& ed, Color& color) {
 
 
 line_t bresenham_double(dot_t& sd, dot_t& ed, Color& color) {
-    double x_start = sd.getX();
-    double y_start = sd.getY();
+    float x_start = sd.getX();
+    float y_start = sd.getY();
     
-    double x_end = ed.getX();
-    double y_end = ed.getY();
+    float x_end = ed.getX();
+    float y_end = ed.getY();
 
-    double dx = x_end - x_start;
-    double dy = y_end - y_start;
+    float dx = x_end - x_start;
+    float dy = y_end - y_start;
 
-    double x_sign = signum(dx);
-    double y_sign = signum(dy);
+    float x_sign = signum(dx);
+    float y_sign = signum(dy);
 
     dx = abs(dx);
     dy = abs(dy);
 
-    double xx;
-    double xy;
-    double yx;
-    double yy;
+    float xx;
+    float xy;
+    float yx;
+    float yy;
 
     if (dx > dy) {
         xx = x_sign;
@@ -104,13 +104,13 @@ line_t bresenham_double(dot_t& sd, dot_t& ed, Color& color) {
         yy = 0;
     }
 
-    double m = dy / dx;
-    double e = m - 0.5;
-    double y = 0;
+    float m = dy / dx;
+    float e = m - 0.5;
+    float y = 0;
 
     std::vector<dot_t> dots;
 
-    double x = 0;
+    float x = 0;
     while (x < dx + 1) {
 
         dots.emplace_back(x_start + x * xx + y * yx, y_start + x * xy + y * yy, color);
@@ -131,25 +131,25 @@ line_t bresenham_double(dot_t& sd, dot_t& ed, Color& color) {
 }
 
 line_t bresenham_antialiased(dot_t& sd, dot_t& ed, Color& color) {
-    double x_start = sd.getX();
-    double y_start = sd.getY();
+    float x_start = sd.getX();
+    float y_start = sd.getY();
     
-    double x_end = ed.getX();
-    double y_end = ed.getY();
+    float x_end = ed.getX();
+    float y_end = ed.getY();
 
-    double dx = x_end - x_start;
-    double dy = y_end - y_start;
+    float dx = x_end - x_start;
+    float dy = y_end - y_start;
 
-    double x_sign = signum(dx);
-    double y_sign = signum(dy);
+    float x_sign = signum(dx);
+    float y_sign = signum(dy);
 
     dx = abs(dx);
     dy = abs(dy);
 
-    double xx;
-    double xy;
-    double yx;
-    double yy;
+    float xx;
+    float xy;
+    float yx;
+    float yy;
 
     if (dx > dy) {
         xx = x_sign;
@@ -164,20 +164,19 @@ line_t bresenham_antialiased(dot_t& sd, dot_t& ed, Color& color) {
         yy = 0;
     }
 
-    double m = dy / dx;
-    double e = 0.5;
-    double w = 1;
-    double y = 0;
+    float m = dy / dx;
+    float e = 0.5;
+    float w = 1;
+    float y = 0;
 
     std::vector<dot_t> dots;
 
-    double x = 0;
+    float x = 0;
     while (x < dx + 1) {
-        Color new_color(255.0 * e, 255.0 * e, 255.0);
+        Color c = color;
+        c.setAlpha(255 * e);
 
-        // dot_t dot(x_start + x * xx + y * yx, y_start + x * xy + y * yy, color + new_color);
-        
-        dots.emplace_back(x_start + x * xx + y * yx, y_start + x * xy + y * yy, color + new_color);
+        dots.emplace_back(x_start + x * xx + y * yx, y_start + x * xy + y * yy, c);
 
         if (e >= w - m) {
             y++;

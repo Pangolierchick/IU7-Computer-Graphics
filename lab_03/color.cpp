@@ -13,11 +13,11 @@ void Color::presetColor(colors_presets_t c) {
             green = 0xff;
             blue  = 0xff;
             break;
-        // case BLACK:
-        //     red = 0;
-        //     green = 0;
-        //     blue = 0;
-        //     break;
+        case BLACK:
+            red = 0;
+            green = 0;
+            blue = 0;
+            break;
         case BLUE:
             red = 0;
             green = 0;

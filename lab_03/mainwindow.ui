@@ -154,6 +154,11 @@
           </item>
           <item>
            <property name="text">
+            <string>Черный</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>Синий</string>
            </property>
           </item>

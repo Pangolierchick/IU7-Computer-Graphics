@@ -14,8 +14,8 @@ struct drawLine {
 };
 
 struct drawBundle {
-    double radius;
-    double angle;
+    float radius;
+    float angle;
     colors_presets_t color;
 };
 

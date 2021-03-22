@@ -5,32 +5,33 @@
 #include "draw.hpp"
 #include "logger.h"
 #include "uimanager.hpp"
+#include "timer.hpp"
 
 #define PI (333.0 / 106.0)
 
-static inline double move_x_to_center(double x, double width) {
+static inline float move_x_to_center(float x, float width) {
     return x + (width / 2.0);
 }
 
-static inline double move_y_to_center(double y, double height) {
+static inline float move_y_to_center(float y, float height) {
     return y + (height / 2.0);
 }
 
-static inline double to_radians(double angle) {
+static inline float to_radians(float angle) {
     return angle * (PI / 180.0);
 }
 
-static void rotate_dot(dot_t& d, double angle, double xc=0, double yc=0) {
-    double copy_x = d.getX();
-    double copy_y = d.getY();
+static void rotate_dot(dot_t& d, float angle, float xc=0, float yc=0) {
+    float copy_x = d.getX();
+    float copy_y = d.getY();
 
     d.setX(xc + (copy_x - xc) * cos(angle) - (copy_y - yc) * sin(angle));
     d.setY(yc + (copy_y - yc) * cos(angle) + (copy_x - xc) * sin(angle));
 }
 
-static void rotate_coord(double &x, double &y, double angle, double xc=0, double yc=0) {
-    double copy_x = x;
-    double copy_y = y;
+static void rotate_coord(float &x, float &y, float angle, float xc=0, float yc=0) {
+    float copy_x = x;
+    float copy_y = y;
 
     x = (xc + (copy_x - xc) * cos(angle) - (copy_y - yc) * sin(angle));
     y = (yc + (copy_y - yc) * cos(angle) + (copy_x - xc) * sin(angle));
@@ -42,7 +43,7 @@ void drawPixel(drawScene_t &scene, dot_t& dot) {
     auto c = dot.getColor();
 
     QGraphicsScene *draw_scene = scene.getScene();
-    QColor color(c.Red(), c.Green(), c.Blue());
+    QColor color(c.Red(), c.Green(), c.Blue(), c.Alpha());
     QPen pen(color);
     pen.setWidthF(1);
     
@@ -64,7 +65,7 @@ void drawPixelFromCenter(drawScene_t &scene, dot_t& dot) {
     auto c = dot.getColor();
 
     QGraphicsScene *draw_scene = scene.getScene();
-    QColor color(c.Red(), c.Green(), c.Blue());
+    QColor color(c.Red(), c.Green(), c.Blue(), c.Alpha());
     QPen pen(color);
     pen.setWidthF(1);
 
@@ -95,7 +96,7 @@ void drawLibLine(drawScene_t &scene, drawLine_t lineParams) {
     c.presetColor(cp);
 
     QGraphicsScene *draw_scene = scene.getScene();
-    QColor color(c.Red(), c.Green(), c.Blue());
+    QColor color(c.Red(), c.Green(), c.Blue(), c.Alpha());
     QPen pen(color);
     pen.setWidthF(1);
 
@@ -112,12 +113,12 @@ void cleanScreen(drawScene_t &scene) {
     draw_scene->clear();
 }
 
-double get_len(double x, double y, double xc, double yc) {
+float get_len(float x, float y, float xc, float yc) {
     return (sqrt(pow(x - xc, 2) + pow(y - yc, 2)));
 }
 
 void drawBundle(drawScene_t &scene, drawBundle_t &bundleParams, drawMethods_t method) {
-    double angle = to_radians(bundleParams.angle);
+    float angle = to_radians(bundleParams.angle);
 
     int iters = 360.0 / bundleParams.angle;
 
@@ -133,8 +134,8 @@ void drawBundle(drawScene_t &scene, drawBundle_t &bundleParams, drawMethods_t me
 
     lines.resize(iters + 10);
 
-    double left_c  = (draw_scene->width() / 2.0)  + bundleParams.radius;
-    double right_c = (draw_scene->height() / 2.0) + bundleParams.radius;
+    float left_c  = (draw_scene->width() / 2.0)  + bundleParams.radius;
+    float right_c = (draw_scene->height() / 2.0) + bundleParams.radius;
 
     for (int i = 0; i < iters; i++) {
         right_dots.emplace_back(left_c, right_c, c);
@@ -143,6 +144,7 @@ void drawBundle(drawScene_t &scene, drawBundle_t &bundleParams, drawMethods_t me
 
     #pragma omp parallel for
     for (int i = 0; i < iters; i++) {
+
         drawLine_t draw_line;
         draw_line.d1 = ds;
         draw_line.d2 = right_dots[i];
@@ -158,7 +160,7 @@ void drawBundle(drawScene_t &scene, drawBundle_t &bundleParams, drawMethods_t me
 }
 
 void drawLibBundle(drawScene_t &scene, drawBundle_t &bundleParams) {
-    double angle = to_radians(bundleParams.angle);
+    float angle = to_radians(bundleParams.angle);
 
     int iters = 360.0 / bundleParams.angle;
 
