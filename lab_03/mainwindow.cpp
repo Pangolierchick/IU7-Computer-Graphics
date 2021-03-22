@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     QGraphicsScene *scene = new QGraphicsScene(0, 0, 719, 606);
-    ui->graphicsView->fitInView(scene->sceneRect());
+    // ui->graphicsView->fitInView(scene->sceneRect());
     ui->graphicsView->setScene(scene);
 }
 
@@ -24,7 +24,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent* e)
 {
-    ui->graphicsView->fitInView(ui->graphicsView->scene()->sceneRect());
+    // ui->graphicsView->fitInView(ui->graphicsView->scene()->sceneRect());
 }
 
 void MainWindow::on_draw_line_button_clicked()

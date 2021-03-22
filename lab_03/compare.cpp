@@ -83,7 +83,7 @@ std::map<std::string, long> doBenchmarks() {
         bencharms_res[DDA_STR] += GET_TIME();
     }
 
-    bencharms_res[DDA_STR] /= benchmarks_number;
+    // bencharms_res[DDA_STR] /= benchmarks_number;
 
     method = BRESENHAM_INT;
 
@@ -97,7 +97,7 @@ std::map<std::string, long> doBenchmarks() {
         bencharms_res[BRESENHAM_INT_STR] += GET_TIME();
     }
     
-    bencharms_res[BRESENHAM_INT_STR] /= benchmarks_number;
+    // bencharms_res[BRESENHAM_INT_STR] /= benchmarks_number;
 
     method = BRESENHAM_FLOAT;
 
@@ -111,7 +111,7 @@ std::map<std::string, long> doBenchmarks() {
         bencharms_res[BRESENHAM_FLOAT_STR] += GET_TIME();
     }
 
-    bencharms_res[BRESENHAM_FLOAT_STR] /= benchmarks_number;
+    // bencharms_res[BRESENHAM_FLOAT_STR] /= benchmarks_number;
 
     method = BRESENHAM_ANTIALIASING;
 
@@ -125,7 +125,7 @@ std::map<std::string, long> doBenchmarks() {
         bencharms_res[BRESENHAM_ANT_STR] += GET_TIME();    
     }
 
-    bencharms_res[BRESENHAM_ANT_STR] /= benchmarks_number;
+    // bencharms_res[BRESENHAM_ANT_STR] /= benchmarks_number;
 
 
     method = WU;
@@ -140,7 +140,7 @@ std::map<std::string, long> doBenchmarks() {
         bencharms_res[WU_STR] += GET_TIME();
     }
 
-    bencharms_res[WU_STR] /= benchmarks_number;
+    // bencharms_res[WU_STR] /= benchmarks_number;
 
     bencharms_res[LIB_STR] = bencharms_res[BRESENHAM_INT_STR] * 0.65;
 
