@@ -18,6 +18,9 @@ public:
     ~MainWindow();
 
 private slots:
+    void on_pushButton_clicked();
+
+private slots:
     void on_draw_line_button_clicked();
     void resizeEvent(QResizeEvent* e);
 

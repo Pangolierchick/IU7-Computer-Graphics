@@ -43,6 +43,8 @@ set(PROJECT_SOURCES
         compare.cpp
         compare.hpp
         timer.hpp
+        ladder.cpp
+        ladder.hpp
 )
 
 add_executable(lab_03

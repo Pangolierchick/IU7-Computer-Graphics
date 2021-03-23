@@ -5,6 +5,7 @@
 #include "commands.hpp"
 #include "logger.h"
 #include "compare.hpp"
+#include "ladder.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -89,4 +90,10 @@ void MainWindow::on_compare_algos_button_clicked()
 
 colors_presets_t MainWindow::get_color() {
     return (colors_presets_t) ui->colorBox->currentIndex();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    auto chartView = getLadderPlot(ui->bundle_step_spin->value());
+    chartView->show();
 }

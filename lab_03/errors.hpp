@@ -5,4 +5,4 @@ enum errors {
     UKNOWN_CMD
 };
 
-using error_t = enum errors;
+// using error_t = enum errors;
