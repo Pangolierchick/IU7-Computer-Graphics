@@ -32,8 +32,6 @@ QChartView* getChartView() {
     QBarSet *set0 = new QBarSet("Время (мкс)");
 
     QBarSeries *series = new QBarSeries();
-    series->attachAxis(axisX);
-    series->attachAxis(axisY);
 
 
     *set0 << bench[DDA_STR] << bench[BRESENHAM_INT_STR] << bench[BRESENHAM_FLOAT_STR] << bench[BRESENHAM_ANT_STR] << bench[WU_STR] << bench[LIB_STR];
@@ -41,6 +39,9 @@ QChartView* getChartView() {
 
     series->append(set0);
     chart->addSeries(series);
+
+    series->attachAxis(axisX);
+    series->attachAxis(axisY);
     
     return chartView;
 }

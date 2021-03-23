@@ -94,6 +94,6 @@ colors_presets_t MainWindow::get_color() {
 
 void MainWindow::on_pushButton_clicked()
 {
-    auto chartView = getLadderPlot(ui->bundle_step_spin->value());
+    auto chartView = getLadderPlot();
     chartView->show();
 }

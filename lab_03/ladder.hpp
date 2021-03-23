@@ -3,4 +3,6 @@
 #include <QWidget>
 #include <QtCharts>
 
-QChartView *getLadderPlot(int angle_step);
+#include "draw.hpp"
+
+QChartView *getLadderPlot();
