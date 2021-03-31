@@ -27,7 +27,7 @@ class Color {
             return *this;
         }
 
-        Color operator+(const Color& c) {
+        Color operator+() {
             Color temp(red, green, blue);
 
             // temp.red = red + c.red;

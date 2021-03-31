@@ -16,24 +16,6 @@ static float ipart(float x) {
     return x - fpart(x);
 }
 
-static float myround(float x) {
-    return ipart(x + 0.5);
-}
-
-static void wu_swap(float &x, float &y, int steep) {
-    if (steep) {
-        std::swap(x, y);
-    }
-}
-
-static void get_endpoints(float x, float y, float m, float *px, float *py) {
-    float x_e = round(x);
-    float y_e = y + (x_e - x) * m;
-
-    *px = round(x_e);
-    *py = round(y_e);
-}
-
 line_t wu(dot_t &sd, dot_t &ed, Color &color) {
     float x_start = sd.getX();
     float y_start = sd.getY();

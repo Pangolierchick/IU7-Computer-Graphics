@@ -34,7 +34,7 @@ line_t dda(dot_t& sd, dot_t& ed, Color& color) {
         y += dy;
 
         TRACE_PRINT("Pushing back: %lf %lf\n", x, y);
-        dots.emplace_back(x, y, color);
+        dots.emplace_back(round(x), round(y), color);
 
         i++;
     }

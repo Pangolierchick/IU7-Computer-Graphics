@@ -45,9 +45,8 @@ void drawPixel(drawScene_t &scene, dot_t& dot) {
     QGraphicsScene *draw_scene = scene.getScene();
     QColor color(c.Red(), c.Green(), c.Blue(), c.Alpha());
     QPen pen(color);
-    pen.setWidthF(1);
     
-    draw_scene->addLine(x, y, x + 0.5, y, pen);
+    draw_scene->addLine(x, y, x, y, pen);
 }
 
 
@@ -100,10 +99,10 @@ void drawLibLine(drawScene_t &scene, drawLine_t lineParams) {
     QPen pen(color);
     pen.setWidthF(1);
 
-    x1 = move_x_to_center(x1, draw_scene->width());
-    y1 = move_y_to_center(y1, draw_scene->height());
-    x2 = move_x_to_center(x2, draw_scene->width());
-    y2 = move_y_to_center(y2, draw_scene->height());
+    // x1 = move_x_to_center(x1, draw_scene->width());
+    // y1 = move_y_to_center(y1, draw_scene->height());
+    // x2 = move_x_to_center(x2, draw_scene->width());
+    // y2 = move_y_to_center(y2, draw_scene->height());
     
     draw_scene->addLine(x1, y1, x2, y2, pen);
 }
