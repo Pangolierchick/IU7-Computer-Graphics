@@ -18,8 +18,9 @@ find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)
 set(SRC_DIR ./src)
 set(UI_DIR ${SRC_DIR}/ui)
 set(METHODS_DIR ${SRC_DIR}/methods)
+set(DRAW_DIR ${SRC_DIR}/draw)
 
-include_directories(${UI_DIR} ${METHODS_DIR})
+include_directories(${UI_DIR} ${METHODS_DIR} ${DRAW_DIR})
 
 add_definitions(-Wall -Wextra)
 
@@ -28,6 +29,16 @@ set(PROJECT_SOURCES
         ${UI_DIR}/mainwindow.cpp
         ${UI_DIR}/mainwindow.hpp
         ${UI_DIR}/mainwindow.ui
+        ${METHODS_DIR}/bresenhem.cpp
+        ${METHODS_DIR}/bresenhem.hpp
+        ${METHODS_DIR}/canonical.cpp
+        ${METHODS_DIR}/canonical.hpp
+        ${METHODS_DIR}/middlep.cpp
+        ${METHODS_DIR}/middlep.hpp
+        ${METHODS_DIR}/parametric.cpp
+        ${METHODS_DIR}/parametric.hpp
+        ${DRAW_DIR}/draw.cpp
+        ${DRAW_DIR}/draw.hpp
 )
 
 add_executable(lab_04
