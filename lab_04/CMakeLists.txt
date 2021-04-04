@@ -1,0 +1,38 @@
+cmake_minimum_required(VERSION 3.5)
+
+project(lab_04 LANGUAGES CXX)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_PREFIX_PATH /usr/local/opt/qt5)
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(OpenMP REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)
+
+set(SRC_DIR ./src)
+set(UI_DIR ${SRC_DIR}/ui)
+set(METHODS_DIR ${SRC_DIR}/methods)
+
+include_directories(${UI_DIR} ${METHODS_DIR})
+
+add_definitions(-Wall -Wextra)
+
+set(PROJECT_SOURCES
+        ${SRC_DIR}/main.cpp
+        ${UI_DIR}/mainwindow.cpp
+        ${UI_DIR}/mainwindow.hpp
+        ${UI_DIR}/mainwindow.ui
+)
+
+add_executable(lab_04
+    ${PROJECT_SOURCES}
+)
+
+target_link_libraries(lab_04 PRIVATE Qt5::Widgets Qt5::Charts PRIVATE OpenMP::OpenMP_CXX)
+
