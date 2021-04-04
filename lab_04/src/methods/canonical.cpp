@@ -1,7 +1,7 @@
 #include <cmath>
 #include "canonical.hpp"
 
-void canonical_circle(drawArea &area, point &c, float r, bool draw=true) {
+void canonical_circle(drawArea &area, point &c, float r, bool draw) {
     for (float x = 0; x < r + 1.5; x++) {
         float y = roundf(sqrtf(r*r - x*x));
 
@@ -10,7 +10,7 @@ void canonical_circle(drawArea &area, point &c, float r, bool draw=true) {
     }
 }
 
-void canonical_ellipse(drawArea &area, point &c, float a, float b, bool draw=true) {
+void canonical_ellipse(drawArea &area, point &c, float a, float b, bool draw) {
     for (float x = 0; x <= a + 1; x++) {
         float y = roundf(b * sqrtf(1.0f - (x * x) / (a * a)));
 
