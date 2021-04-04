@@ -1,5 +1,6 @@
 #include <cmath>
 #include "bresenhem.hpp"
+#include "logger.h"
 
 void bresenhem_circle(drawArea &area, point &c, float r, bool draw) {
     float x = 0;
@@ -7,7 +8,7 @@ void bresenhem_circle(drawArea &area, point &c, float r, bool draw) {
 
     float d = 2 - 2 * r;
 
-    if (draw)
+    if (draw) 
         plot_circle(area, c.x, x, c.y, y);
 
     while (y >= x) {
@@ -33,7 +34,7 @@ void bresenhem_circle(drawArea &area, point &c, float r, bool draw) {
             }
         }
 
-        if (draw)
+        if (draw) 
             plot_circle(area, c.x, x, c.y, y);
     }
 }

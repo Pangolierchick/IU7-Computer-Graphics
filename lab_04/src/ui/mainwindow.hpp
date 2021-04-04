@@ -18,6 +18,9 @@ private:
     Ui::MainWindow *ui;
 
 private slots:
-    void on_pushButton_clicked();
     void resizeEvent(QResizeEvent* e);
+    void on_add_circle_btn_clicked();
+    void on_add_ellipse_btn_clicked();
+    void on_clean_screen_btn_clicked();
+    void on_do_benchmarks_btn_clicked();
 };

@@ -20,12 +20,13 @@ set(UI_DIR ${SRC_DIR}/ui)
 set(METHODS_DIR ${SRC_DIR}/methods)
 set(DRAW_DIR ${SRC_DIR}/draw)
 
-include_directories(${UI_DIR} ${METHODS_DIR} ${DRAW_DIR})
+include_directories(${UI_DIR} ${METHODS_DIR} ${DRAW_DIR} ${SRC_DIR})
 
 add_definitions(-Wall -Wextra)
 
 set(PROJECT_SOURCES
         ${SRC_DIR}/main.cpp
+        ${SRC_DIR}/logger.h
         ${UI_DIR}/mainwindow.cpp
         ${UI_DIR}/mainwindow.hpp
         ${UI_DIR}/mainwindow.ui
@@ -37,6 +38,7 @@ set(PROJECT_SOURCES
         ${METHODS_DIR}/middlep.hpp
         ${METHODS_DIR}/parametric.cpp
         ${METHODS_DIR}/parametric.hpp
+        ${METHODS_DIR}/methods.hpp
         ${DRAW_DIR}/draw.cpp
         ${DRAW_DIR}/draw.hpp
 )

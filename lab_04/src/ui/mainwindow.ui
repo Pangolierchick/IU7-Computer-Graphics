@@ -181,7 +181,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBox"/>
+         <widget class="QSpinBox" name="circle_num_box">
+          <property name="value">
+           <number>1</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -195,7 +199,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBox_2"/>
+         <widget class="QSpinBox" name="circle_step_box">
+          <property name="maximum">
+           <number>500</number>
+          </property>
+          <property name="value">
+           <number>5</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -211,10 +222,24 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_3"/>
+           <widget class="QSpinBox" name="circle_center_x">
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>350</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_4"/>
+           <widget class="QSpinBox" name="circle_center_y">
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="singleStep">
+             <number>350</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -228,14 +253,21 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_5"/>
+           <widget class="QSpinBox" name="circle_radius">
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>200</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
        </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="add_circle_btn">
         <property name="text">
          <string>Построить окружность</string>
         </property>
@@ -253,10 +285,24 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_6"/>
+           <widget class="QSpinBox" name="ellipse_center_x">
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>350</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_7"/>
+           <widget class="QSpinBox" name="ellipse_center_y">
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>350</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -270,26 +316,47 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_9"/>
+           <widget class="QSpinBox" name="ellipse_halfax_x">
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>200</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_8"/>
+           <widget class="QSpinBox" name="ellipse_halfax_y">
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>150</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
        </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="add_ellipse_btn">
         <property name="text">
          <string>Построить эллипс</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="clean_screen_btn">
         <property name="text">
          <string>Очистить экран</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="do_benchmarks_btn">
+        <property name="text">
+         <string>Сравнить алогоритмы</string>
         </property>
        </widget>
       </item>
