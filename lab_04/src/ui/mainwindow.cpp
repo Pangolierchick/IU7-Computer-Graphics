@@ -1,7 +1,6 @@
 #include "mainwindow.hpp"
 #include "./ui_mainwindow.h"
 
-#include "draw.hpp"
 #include "logger.h"
 #include "color.hpp"
 #include "benchmarks.hpp"
@@ -42,6 +41,12 @@ void MainWindow::on_add_circle_btn_clicked()
     int circles_num = ui->circle_num_box->value();
     int step = ui->circle_step_box->value();
 
+    if ((Colors) ui->colorBox->currentIndex() == BACKGROUND && last_method < PARAMETRIC_METHOD) {
+        // boilerplate for kurov
+        ui->graphicsView->scene()->clear();
+    }
+
+    last_method = method;
     draw_circle_bundle(area, center, circle_rad, circles_num, step, method);
 }
 
@@ -58,6 +63,13 @@ void MainWindow::on_add_ellipse_btn_clicked()
     float b = ui->ellipse_halfax_y->value();
     int num = ui->circle_num_box->value();
     int step = ui->circle_step_box->value();
+
+    if ((Colors) ui->colorBox->currentIndex() == BACKGROUND && last_method < PARAMETRIC_METHOD) {
+        // boilerplate for kurov
+        ui->graphicsView->scene()->clear();
+    }
+
+    last_method = method;
 
     draw_ellipse_bundle(area, center, a, b, num, step, method);
 }

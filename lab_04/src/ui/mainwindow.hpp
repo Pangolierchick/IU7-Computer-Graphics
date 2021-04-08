@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 
+#include "draw.hpp"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -15,6 +17,7 @@ public:
     ~MainWindow();
 
 private:
+    Methods last_method = BRESENHEM_METHOD;
     Ui::MainWindow *ui;
 
 private slots:

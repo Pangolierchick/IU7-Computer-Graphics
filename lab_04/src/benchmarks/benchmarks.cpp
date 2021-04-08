@@ -16,7 +16,7 @@ std::map<std::string, long> doBenchmarks(float r) {
                                                 {MIDDLE_POINT_STR, 0}, 
                                                 {CANONICAL_STR, 0}, 
                                                 {PARAMETRIC_STR, 0},
-                                                {LIB_STR, 2}
+                                                {LIB_STR, 0.001 * r}
                                               };
     
     struct timespec start_time_s, end_time_s;
@@ -27,7 +27,7 @@ std::map<std::string, long> doBenchmarks(float r) {
     point center(300, 300);
 
     for (int i = 0; i < 5; i++) {
-        if (i == 2) // FIXME lib method
+        if (i == 2)
             continue;
 
         auto func = get_circle_fun((Methods) i);
@@ -64,7 +64,7 @@ QChartView *getBenchmarksPlot() {
 
 
     axisX->setRange(0, 3500);
-    axisY->setRange(0, 15);
+    axisY->setRange(0, 100);
     QSplineSeries* br_series = new QSplineSeries();
     QSplineSeries* mp_series = new QSplineSeries();
     QSplineSeries* lib_series = new QSplineSeries();
