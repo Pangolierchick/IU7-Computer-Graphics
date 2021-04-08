@@ -9,7 +9,7 @@ void middle_circle(drawArea &area, point &c, float r, bool draw) {
 
     while (x <= y) {
         if (draw)
-            plot_circle(area, c.x, x, c.y, y);
+            plot_circle(area, c.x, x + c.x, c.y, y + c.y);
         
         x++;
 

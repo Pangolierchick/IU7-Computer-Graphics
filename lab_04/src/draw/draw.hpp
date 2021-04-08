@@ -30,7 +30,7 @@ typedef void (*draw_ellipse_fun)(drawArea&, point&, float, float, bool);
 draw_circle_fun  get_circle_fun(Methods m);
 draw_ellipse_fun get_ellipse_fun(Methods m);
 
-
+void plot_point(drawArea &area, float x, float y);
 void plot_circle(drawArea &area, float cx, float x, float cy, float y);
 void plot_ellipse(drawArea &area, float cx, float x, float cy, float y);
 

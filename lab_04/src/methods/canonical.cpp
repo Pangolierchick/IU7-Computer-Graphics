@@ -2,11 +2,12 @@
 #include "canonical.hpp"
 
 void canonical_circle(drawArea &area, point &c, float r, bool draw) {
-    for (float x = 0; x < r + 1.5; x++) {
+    for (float x = 0; x < (r / sqrtf(2.0f)) + 1; x++) {
         float y = roundf(sqrtf(r*r - x*x));
 
-        if (draw)
-            plot_circle(area, c.x, x, c.y, y);
+        if (draw) {
+            plot_circle(area, c.x, x + c.x, c.y, y + c.y);
+        }
     }
 }
 

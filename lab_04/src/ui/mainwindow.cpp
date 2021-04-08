@@ -3,6 +3,8 @@
 
 #include "draw.hpp"
 #include "logger.h"
+#include "color.hpp"
+#include "benchmarks.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -11,13 +13,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     QGraphicsScene *scene = new QGraphicsScene(0, 0, 808, 600);
     
+    // ui->graphicsView->fitInView(scene->sceneRect());
     ui->graphicsView->setScene(scene);
 
-    // ui->graphicsView->fitInView(ui->graphicsView->scene()->sceneRect());
 }
 
 void MainWindow::resizeEvent(QResizeEvent* e)
 {
+    // FIXME
     // ui->graphicsView->fitInView(ui->graphicsView->scene()->sceneRect());
 }
 
@@ -30,7 +33,7 @@ void MainWindow::on_add_circle_btn_clicked()
 {
     Methods method = (Methods) ui->draw_method->currentIndex();
 
-    QPen pen(QColor(0xff, 0, 0));
+    QPen pen(getColor((Colors) ui->colorBox->currentIndex()));
     drawArea area(ui->graphicsView->scene(), pen);
 
     point center(ui->circle_center_x->value(), ui->circle_center_y->value());
@@ -39,26 +42,35 @@ void MainWindow::on_add_circle_btn_clicked()
     int circles_num = ui->circle_num_box->value();
     int step = ui->circle_step_box->value();
 
-    DBG_PRINT("Drawing %d circles with (%f %f) center and %f radius by %d method\n", circles_num, center.x, center.y, circle_rad, method);
-
     draw_circle_bundle(area, center, circle_rad, circles_num, step, method);
 }
 
 void MainWindow::on_add_ellipse_btn_clicked()
 {
+    Methods method = (Methods) ui->draw_method->currentIndex();
 
+    QPen pen(getColor((Colors) ui->colorBox->currentIndex()));
+    drawArea area(ui->graphicsView->scene(), pen);
+
+    point center(ui->ellipse_center_x->value(), ui->ellipse_center_y->value());
+
+    float a = ui->ellipse_halfax_x->value();
+    float b = ui->ellipse_halfax_y->value();
+    int num = ui->circle_num_box->value();
+    int step = ui->circle_step_box->value();
+
+    draw_ellipse_bundle(area, center, a, b, num, step, method);
 }
 
 void MainWindow::on_clean_screen_btn_clicked()
 {
     auto scene = ui->graphicsView->scene();
 
-    printf("Scene: %p\n", scene);
-
     scene->clear();
 }
 
 void MainWindow::on_do_benchmarks_btn_clicked()
 {
-    // TODO
+    auto benchmarks_plot = getBenchmarksPlot();
+    benchmarks_plot->show();
 }

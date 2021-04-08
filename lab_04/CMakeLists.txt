@@ -19,8 +19,9 @@ set(SRC_DIR ./src)
 set(UI_DIR ${SRC_DIR}/ui)
 set(METHODS_DIR ${SRC_DIR}/methods)
 set(DRAW_DIR ${SRC_DIR}/draw)
+set(BENCHMARK_DIR ${SRC_DIR}/benchmarks)
 
-include_directories(${UI_DIR} ${METHODS_DIR} ${DRAW_DIR} ${SRC_DIR})
+include_directories(${UI_DIR} ${METHODS_DIR} ${DRAW_DIR} ${SRC_DIR} ${BENCHMARK_DIR})
 
 add_definitions(-Wall -Wextra)
 
@@ -29,6 +30,8 @@ set(PROJECT_SOURCES
         ${SRC_DIR}/logger.h
         ${UI_DIR}/mainwindow.cpp
         ${UI_DIR}/mainwindow.hpp
+        ${UI_DIR}/color.cpp
+        ${UI_DIR}/color.hpp
         ${UI_DIR}/mainwindow.ui
         ${METHODS_DIR}/bresenhem.cpp
         ${METHODS_DIR}/bresenhem.hpp
@@ -41,6 +44,9 @@ set(PROJECT_SOURCES
         ${METHODS_DIR}/methods.hpp
         ${DRAW_DIR}/draw.cpp
         ${DRAW_DIR}/draw.hpp
+        ${BENCHMARK_DIR}/benchmarks.cpp
+        ${BENCHMARK_DIR}/benchmarks.hpp
+        ${BENCHMARK_DIR}/timer.hpp
 )
 
 add_executable(lab_04

@@ -144,22 +144,17 @@
          <widget class="QComboBox" name="colorBox">
           <item>
            <property name="text">
-            <string>Фиолетовый</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
             <string>Черный</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Синий</string>
+            <string>Красный</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Зеленый</string>
+            <string>Фиолетовый</string>
            </property>
           </item>
           <item>
@@ -204,7 +199,7 @@
            <number>500</number>
           </property>
           <property name="value">
-           <number>5</number>
+           <number>20</number>
           </property>
          </widget>
         </item>
@@ -227,7 +222,7 @@
              <number>1000</number>
             </property>
             <property name="value">
-             <number>350</number>
+             <number>400</number>
             </property>
            </widget>
           </item>
@@ -237,7 +232,10 @@
              <number>1000</number>
             </property>
             <property name="singleStep">
-             <number>350</number>
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>300</number>
             </property>
            </widget>
           </item>
@@ -290,7 +288,7 @@
              <number>1000</number>
             </property>
             <property name="value">
-             <number>350</number>
+             <number>400</number>
             </property>
            </widget>
           </item>
@@ -300,7 +298,7 @@
              <number>1000</number>
             </property>
             <property name="value">
-             <number>350</number>
+             <number>300</number>
             </property>
            </widget>
           </item>

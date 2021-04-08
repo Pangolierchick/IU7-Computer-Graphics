@@ -5,7 +5,7 @@
 
 #define VERSION              "0.5"
 
-#define LOG_LEVEL           4
+#define LOG_LEVEL           0
 
 #define NO_LOG              0
 #define ERROR               1
@@ -13,10 +13,10 @@
 #define DEBUG               3
 #define TRACE               4
 
-#define INFO_TAG            GREEN "INFO " RESET_COLOR
-#define ERROR_TAG           RED "ERROR" RESET_COLOR
-#define DEBUG_TAG           YELLOW "DEBUG" RESET_COLOR
-#define TRACE_TAG           MAGENTA "TRACE" RESET_COLOR
+#define INFO_TAG            GREEN_LOG "INFO " RESET_COLOR_LOG
+#define ERROR_TAG           RED_LOG "ERROR" RESET_COLOR_LOG
+#define DEBUG_TAG           YELLOW_LOG "DEBUG" RESET_COLOR_LOG
+#define TRACE_TAG           MAGENTA_LOG "TRACE" RESET_COLOR_LOG
 
 #define LOGGER_FORMAT(tag)    "[" tag "]" "[%19s] [%17s:%4d] "
 #define LOGGER_ARGS()         __FILE__, __func__, __LINE__
@@ -34,13 +34,11 @@
 #endif 
 
 // ============= COLORS SECTION =============
-
-#define MAGENTA    "\u001b[35;1m"
-#define YELLOW      "\u001b[33;1m"
-#define GREEN       "\u001b[32;1m"
-#define RED         "\u001b[31;1m"
-#define RESET_COLOR "\u001b[0m"
-
+#define MAGENTA_LOG    "\u001b[35;1m"
+#define YELLOW_LOG      "\u001b[33;1m"
+#define GREEN_LOG       "\u001b[32;1m"
+#define RED_LOG         "\u001b[31;1m"
+#define RESET_COLOR_LOG "\u001b[0m"
 // ==========================================
 
 
