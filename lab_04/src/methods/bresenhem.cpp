@@ -3,17 +3,17 @@
 #include "logger.h"
 
 void bresenhem_circle(drawArea &area, point &c, float r, bool draw) {
-    float x = 0;
-    float y = r;
+    int x = 0;
+    int y = r;
 
-    float d = 2 * (1 - r);
+    int d = 2 * (1 - r);
 
     if (draw) 
         plot_circle(area, c.x, x + c.x, c.y, y + c.y);
 
     while (y >= x) {
         if (d <= 0) {
-            float buf = 2 * d + 2 * y - 1;
+            int buf = 2 * d + 2 * y - 1;
             x++;
 
             if (buf <= 0)
@@ -23,7 +23,7 @@ void bresenhem_circle(drawArea &area, point &c, float r, bool draw) {
                 y--;
             }
         } else {
-            float buf = 2 * d - 2 * x - 1;
+            int buf = 2 * d - 2 * x - 1;
             y--;
 
             if (buf >= 0)
@@ -34,17 +34,19 @@ void bresenhem_circle(drawArea &area, point &c, float r, bool draw) {
             }
         }
 
+
         if (draw) 
+            // printf("%d %dx\n", x, y);
             plot_circle(area, c.x, x + c.x, c.y, y + c.y);
     }
 }
 
 void bresenhem_ellipse(drawArea &area, point &c, float a, float b, bool draw) {
-    float x = 0;
-    float y = b;
+    int x = 0;
+    int y = b;
 
     a = a * a;
-    float d = roundf(b * b / 2.0f - a * b * 2 + a / 2.0f);
+    int d = b * b / 2.0f - a * b * 2 + a / 2.0f;
     b = b * b;
 
     if (draw)
@@ -52,7 +54,7 @@ void bresenhem_ellipse(drawArea &area, point &c, float a, float b, bool draw) {
 
     while (y > 0) {
         if (d <= 0) {
-            float buf = 2.0f * d + 2.0f * a * y - a;
+            int buf = 2.0f * d + 2.0f * a * y - a;
             x++;
 
             if (buf <= 0)
@@ -62,7 +64,7 @@ void bresenhem_ellipse(drawArea &area, point &c, float a, float b, bool draw) {
                 d = d + 2.0f * b * x - 2.0f * a * y + a + b;
             }
         } else {
-            float buf = 2.0f * d - 2.0f * b * x - b;
+            int buf = 2.0f * d - 2.0f * b * x - b;
             y--;
 
             if (buf >= 0)

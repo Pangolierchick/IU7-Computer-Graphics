@@ -92,8 +92,13 @@ void draw_circle_bundle(drawArea &area, point &center, float radius, int num, in
 }
 
 void draw_ellipse_bundle(drawArea &area, point &center, float a, float b, int num, int step, Methods m) {
+    float k = a / b;
+
     for (int i = 0; i < num; i++) {
-        draw_ellipse(area, center, a + i * step, b + i * step, m);
+        draw_ellipse(area, center, a, b, m);
+
+        b += step;
+        a = b * k;
     }
 }
 

@@ -33,6 +33,7 @@ void MainWindow::on_add_circle_btn_clicked()
     Methods method = (Methods) ui->draw_method->currentIndex();
 
     QPen pen(getColor((Colors) ui->colorBox->currentIndex()));
+    pen.setWidthF(0.7);
     drawArea area(ui->graphicsView->scene(), pen);
 
     point center(ui->circle_center_x->value(), ui->circle_center_y->value());
@@ -41,12 +42,12 @@ void MainWindow::on_add_circle_btn_clicked()
     int circles_num = ui->circle_num_box->value();
     int step = ui->circle_step_box->value();
 
-    if ((Colors) ui->colorBox->currentIndex() == BACKGROUND && last_method < PARAMETRIC_METHOD) {
-        // boilerplate for kurov
+    if ((Colors) ui->colorBox->currentIndex() == BACKGROUND && last_method < PARAMETRIC_METHOD && method != LIB_METHOD) {
         ui->graphicsView->scene()->clear();
     }
 
     last_method = method;
+
     draw_circle_bundle(area, center, circle_rad, circles_num, step, method);
 }
 
@@ -55,6 +56,7 @@ void MainWindow::on_add_ellipse_btn_clicked()
     Methods method = (Methods) ui->draw_method->currentIndex();
 
     QPen pen(getColor((Colors) ui->colorBox->currentIndex()));
+    pen.setWidthF(0.7);
     drawArea area(ui->graphicsView->scene(), pen);
 
     point center(ui->ellipse_center_x->value(), ui->ellipse_center_y->value());
@@ -64,8 +66,7 @@ void MainWindow::on_add_ellipse_btn_clicked()
     int num = ui->circle_num_box->value();
     int step = ui->circle_step_box->value();
 
-    if ((Colors) ui->colorBox->currentIndex() == BACKGROUND && last_method < PARAMETRIC_METHOD) {
-        // boilerplate for kurov
+    if ((Colors) ui->colorBox->currentIndex() == BACKGROUND && last_method < PARAMETRIC_METHOD && method != LIB_METHOD) {
         ui->graphicsView->scene()->clear();
     }
 

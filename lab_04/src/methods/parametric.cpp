@@ -8,7 +8,9 @@ void parametric_circle(drawArea &area, point &c, float r, bool draw) {
         float x = r * cosf(i / r);
         float y = r * sinf(i / r);
 
+
         if (draw)
+            // printf("%f %f\n", x, y);
             plot_circle(area, c.x, x + c.x, c.y, y + c.y);
     }
 }
