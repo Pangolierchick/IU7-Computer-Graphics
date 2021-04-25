@@ -104,9 +104,24 @@ class Window(QtWidgets.QMainWindow):
 
     
     def drawEdges(self):
+        pix = QPixmap()
+        painter = QPainter()
+
+        painter.begin(self.image)
+
+        pen = QPen(QColorConstants.Black)
+
+        painter.setPen(pen)
+
         for edge in self.edges:
-            self.scene.addLine(edge.l.x(), edge.l.y(), edge.r.x(), edge.r.y())
-            # painter.drawLine(edge.l.x(), edge.l.y(), edge.r.x(), edge.r.y())
+            painter.drawLine(edge.l.x(), edge.l.y(), edge.r.x(), edge.r.y())
+        
+        painter.end()
+
+        pix.convertFromImage(self.image)
+        self.scene.clear()
+        self.scene.addPixmap(pix)
+
     
     def __closePoly(self):
         if len(self.edges) > 1:
@@ -125,7 +140,7 @@ class Window(QtWidgets.QMainWindow):
             _min = min(_min, self.points[i], key=lambda x: x.x())
             _max = max(_max, self.points[i], key=lambda x: x.x())
 
-        return _min.x(), _max.x()
+        return int(_min.x()), int(_max.x())
     
     
     def __min_maxY(self):
@@ -136,7 +151,7 @@ class Window(QtWidgets.QMainWindow):
             _min = min(_min, self.points[i], key=lambda x: x.y())
             _max = max(_max, self.points[i], key=lambda x: x.y())
 
-        return _min.y(), _max.y()
+        return int(_min.y()), int(_max.y())
     
     def __paintOverFigure(self):
         pix = QPixmap()
@@ -145,35 +160,42 @@ class Window(QtWidgets.QMainWindow):
         left_x, right_x = self.__min_maxX()
         down_y, upper_y = self.__min_maxY()
 
-        painter.begin(self.image)
 
-        for y in range(upper_y + 10, down_y, -1):
+        self.drawEdges()
+
+        painter.begin(self.image)
+        y = upper_y
+        while y > down_y:
             F = False
 
-            for x in range(left_x - 10, right_x):
+            x = left_x
+
+            while x < right_x:
                 pixel_color = QColor(self.image.pixel(x, y))
 
-                # print("Curr color:", pixel_color.name())
                 if pixel_color == QColorConstants.Black:
-                    print(f'Found edge {x} {y}')
                     F = not F
+
+                while QColor(self.image.pixel(x, y)) == QColorConstants.Black:
+                    x += 1
                 
                 if F:
                     curr_color = self.backGroundColor
                 else:
-                    curr_color = QColorConstants.Blue
+                    curr_color = QColorConstants.White
             
-
                 painter.setPen(curr_color)
-                
-                # print(f'Drawing pixel {x} {y} with color: {curr_color.name()}')
                 painter.drawPoint(x, y)
+
+                x += 1
 
             
             if self.do_slow_drawing.isChecked():
-                self.delay()
+                self.__delay()
                 pix.convertFromImage(self.image)
                 self.scene.addPixmap(pix)
+            
+            y -= 1
         
         if not self.do_slow_drawing.isChecked():
             pix.convertFromImage(self.image)
@@ -181,6 +203,9 @@ class Window(QtWidgets.QMainWindow):
         
         painter.end()
         self.drawEdges()
+    
+    def __delay(self):
+        QtWidgets.QApplication.processEvents(QEventLoop.AllEvents, 1)
 
 
 
@@ -191,10 +216,8 @@ class MyScene(QtWidgets.QGraphicsScene):
 
     def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         if event.buttons() == Qt.LeftButton:
-            self.window.addPoint(x_coord=event.scenePos().x(), y_coord=event.scenePos().y())
-            self.window.drawPolyHandler(event.scenePos())
-    
-            print(event.scenePos().x(), event.scenePos().y())
+            # self.window.drawPolyHandler(event.scenePos())
+            self.window.addPoint(event.scenePos().x(), event.scenePos().y())
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
