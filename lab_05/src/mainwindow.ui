@@ -186,6 +186,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="time_label">
+        <property name="text">
+         <string>Время:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="Line" name="line_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -216,13 +223,16 @@
     <property name="title">
      <string>info</string>
     </property>
-    <addaction name="actionabout"/>
+    <addaction name="close_figure_btn_2"/>
    </widget>
    <addaction name="menuinfo"/>
   </widget>
-  <action name="actionabout">
+  <action name="close_figure_btn_2">
    <property name="text">
-    <string>about</string>
+    <string>close figure</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
    </property>
   </action>
  </widget>

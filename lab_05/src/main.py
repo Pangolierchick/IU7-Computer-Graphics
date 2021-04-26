@@ -1,11 +1,13 @@
 from os import X_OK
 from PyQt5 import QtWidgets, uic
 import PyQt5
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QTableWidgetItem, QColorDialog
 from PyQt5.QtGui import QColorConstants, QPen, QColor, QImage, QPixmap, QPainter, QTextImageFormat
 from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPoint
 import sys
 from dataclasses import dataclass
+from time import perf_counter
 
 
 @dataclass
@@ -37,11 +39,20 @@ class Window(QtWidgets.QMainWindow):
         self.color = QColorConstants.Black
         self.pen = QPen(self.color)
 
-        self.backGroundColor = QColorConstants.Magenta
 
         self.last_point = None
         self.edges = []
         self.points = []
+
+        self.backGroundColor = QColorConstants.Magenta
+
+        scene = QtWidgets.QGraphicsScene(0, 0, 68, 20)
+    
+        image = QPixmap(68, 20)
+        image.fill(self.backGroundColor)
+
+        scene.addPixmap(image)
+        self.color_viewer.setScene(scene)
     
     def __getPoint(self):
         return QPoint(self.x_spinbox.value(), self.y_spinbox.value())
@@ -110,7 +121,7 @@ class Window(QtWidgets.QMainWindow):
         painter.begin(self.image)
 
         pen = QPen(QColorConstants.Black)
-
+        pen.setWidth(1)
         painter.setPen(pen)
 
         for edge in self.edges:
@@ -153,6 +164,49 @@ class Window(QtWidgets.QMainWindow):
 
         return int(_min.y()), int(_max.y())
     
+    def __delay(self):
+        QtWidgets.QApplication.processEvents(QEventLoop.AllEvents, 1)
+    
+    def trace_edge(self, edge):
+        if edge.l.y() == edge.r.y():
+            return
+        
+
+        if edge.l.y() > edge.r.y():
+            edge.l, edge.r = edge.r, edge.l
+        
+        step_x = (edge.r.x() - edge.l.x()) / (edge.r.y() - edge.l.y())
+
+        x = edge.l.x()
+        y = edge.l.y()
+
+        pix = QPixmap()
+        painter = QPainter()
+        painter.begin(self.image)
+
+        painter.setPen(QColorConstants.Green)
+
+        while y < edge.r.y():
+            if QColor(self.image.pixel(int(x) + 1, y)) != QColorConstants.Green:
+                painter.drawPoint(int(x) + 1, y)
+            else:
+                painter.drawPoint(int(x), y)
+            
+            x += step_x
+            y += 1
+
+        painter.end()
+
+        pix.convertFromImage(self.image)
+        self.scene.addPixmap(pix)
+
+
+
+    def trace_figure(self):
+        for edge in self.edges:
+            self.trace_edge(edge)
+    
+
     def __paintOverFigure(self):
         pix = QPixmap()
         painter = QPainter()
@@ -160,34 +214,27 @@ class Window(QtWidgets.QMainWindow):
         left_x, right_x = self.__min_maxX()
         down_y, upper_y = self.__min_maxY()
 
+        start = perf_counter()
 
-        self.drawEdges()
+        self.trace_figure()
 
         painter.begin(self.image)
         y = upper_y
-        while y > down_y:
-            F = False
+        while y > down_y - 1:
+            curr_color = QColorConstants.White
+            inv_color  = self.backGroundColor
 
+            curr_point_scan_string = left_x
             x = left_x
-
-            while x < right_x:
-                pixel_color = QColor(self.image.pixel(x, y))
-
-                if pixel_color == QColorConstants.Black:
-                    F = not F
-
-                while QColor(self.image.pixel(x, y)) == QColorConstants.Black:
-                    x += 1
-                
-                if F:
-                    curr_color = self.backGroundColor
-                else:
-                    curr_color = QColorConstants.White
-            
+            while x < right_x + 3:
                 painter.setPen(curr_color)
-                painter.drawPoint(x, y)
+                if QColor(self.image.pixel(x, y)) == QColorConstants.Green:
+                    painter.drawLine(curr_point_scan_string, y, x, y)
+                    curr_color, inv_color = inv_color, curr_color
+                    curr_point_scan_string = x
 
                 x += 1
+            painter.drawLine(curr_point_scan_string, y, x - 1, y + 1)
 
             
             if self.do_slow_drawing.isChecked():
@@ -203,21 +250,34 @@ class Window(QtWidgets.QMainWindow):
         
         painter.end()
         self.drawEdges()
-    
-    def __delay(self):
-        QtWidgets.QApplication.processEvents(QEventLoop.AllEvents, 1)
 
+        end = perf_counter()
+
+        if not self.do_slow_drawing.isChecked():
+            self.time_label.setText(f'Время: {end - start:.3}')
 
 
 class MyScene(QtWidgets.QGraphicsScene):
     def __init__(self, win:Window, *args):
         super().__init__(*args)
         self.window = win
+        self.last_point = None
 
     def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         if event.buttons() == Qt.LeftButton:
-            # self.window.drawPolyHandler(event.scenePos())
-            self.window.addPoint(event.scenePos().x(), event.scenePos().y())
+            pos = event.scenePos()
+            if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
+                if self.last_point is not None:
+                    x = pos.x() if pos.x() > pos.y() else self.last_point.x()
+                    y = pos.y() if pos.x() < pos.y() else self.last_point.y()
+
+                    print(x, y)
+
+                    self.window.addPoint(x, y)
+            else:
+                self.window.addPoint(pos.x(), pos.y())
+            
+            self.last_point = pos
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
