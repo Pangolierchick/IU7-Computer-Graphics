@@ -63,8 +63,8 @@ QChartView *getBenchmarksPlot() {
     chartView->setMinimumSize(1000, 600);
 
 
-    axisX->setRange(0, 3500);
-    axisY->setRange(0, 100);
+    axisX->setRange(0, 1000);
+    axisY->setRange(0, 25);
     QSplineSeries* br_series = new QSplineSeries();
     QSplineSeries* mp_series = new QSplineSeries();
     QSplineSeries* lib_series = new QSplineSeries();

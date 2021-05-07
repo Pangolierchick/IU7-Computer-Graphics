@@ -36,7 +36,6 @@ void bresenhem_circle(drawArea &area, point &c, float r, bool draw) {
 
 
         if (draw) 
-            // printf("%d %dx\n", x, y);
             plot_circle(area, c.x, x + c.x, c.y, y + c.y);
     }
 }

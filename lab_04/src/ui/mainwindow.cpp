@@ -42,9 +42,7 @@ void MainWindow::on_add_circle_btn_clicked()
     int circles_num = ui->circle_num_box->value();
     int step = ui->circle_step_box->value();
 
-    if ((Colors) ui->colorBox->currentIndex() == BACKGROUND && last_method < PARAMETRIC_METHOD && method != LIB_METHOD) {
-        ui->graphicsView->scene()->clear();
-    }
+    DO_CALCS;
 
     last_method = method;
 
@@ -66,9 +64,7 @@ void MainWindow::on_add_ellipse_btn_clicked()
     int num = ui->circle_num_box->value();
     int step = ui->circle_step_box->value();
 
-    if ((Colors) ui->colorBox->currentIndex() == BACKGROUND && last_method < PARAMETRIC_METHOD && method != LIB_METHOD) {
-        ui->graphicsView->scene()->clear();
-    }
+    DO_CALCS;
 
     last_method = method;
 

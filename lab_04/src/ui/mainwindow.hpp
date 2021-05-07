@@ -4,6 +4,11 @@
 
 #include "draw.hpp"
 
+#define DO_CALCS \
+            if ((Colors) ui->colorBox->currentIndex() == BACKGROUND && last_method < PARAMETRIC_METHOD && method != LIB_METHOD) { \
+                ui->graphicsView->scene()->clear();\
+            }\
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE

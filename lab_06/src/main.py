@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPoint
 import sys
 from dataclasses import dataclass
 from time import perf_counter, sleep
+import math
 
 
 @dataclass
@@ -21,13 +22,14 @@ class Edge:
 
 
 class Window(QtWidgets.QMainWindow):
+    SCENE_WIDTH  = 1191
+    SCENE_HEIGHT = 725
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
         uic.loadUi("mainwindow.ui", self)
-
-        self.scene = MyScene(self, 0, 0, 1191, 725)
+        self.scene = MyScene(self, 0, 0, self.SCENE_WIDTH, self.SCENE_HEIGHT)
         self.main_scene.setScene(self.scene)
-        self.image = QImage(1191, 725, QImage.Format_ARGB32_Premultiplied)
+        self.image = QImage(self.SCENE_WIDTH, self.SCENE_HEIGHT, QImage.Format_RGB32)
         self.image.fill(QColorConstants.White)
 
         self.add_dot_btn.clicked.connect(self.addPoint)
@@ -36,15 +38,17 @@ class Window(QtWidgets.QMainWindow):
         self.close_figure_btn.clicked.connect(self.__closePoly)
         self.paint_figure_btn.clicked.connect(self.__paintOverFigure)
         
-        self.color = QColorConstants.Black
+        self.color = QColor(0, 0, 0)
         self.pen = QPen(self.color)
 
 
         self.last_point = None
         self.edges = []
         self.points = []
+        self.seed_point = QPoint(0, 0)
 
         self.backGroundColor = QColorConstants.DarkMagenta
+        self.lineColor = QColorConstants.Black
 
         scene = QtWidgets.QGraphicsScene(0, 0, 68, 20)
     
@@ -143,64 +147,52 @@ class Window(QtWidgets.QMainWindow):
 
             self.edges.append(Edge(self.first_point, last))
     
-    def __min_maxX(self):
-        _min = self.points[0]
-        _max = self.points[0]
-
-        for i in range(1, len(self.points)):
-            _min = min(_min, self.points[i], key=lambda x: x.x())
-            _max = max(_max, self.points[i], key=lambda x: x.x())
-
-        return int(_min.x()), int(_max.x())
-    
-    
-    def __min_maxY(self):
-        _min = self.points[0]
-        _max = self.points[0]
-
-        for i in range(1, len(self.points)):
-            _min = min(_min, self.points[i], key=lambda x: x.y())
-            _max = max(_max, self.points[i], key=lambda x: x.y())
-
-        return int(_min.y()), int(_max.y())
-    
     def __delay(self):
         QtWidgets.QApplication.processEvents(QEventLoop.AllEvents, 1)
     
-    def trace_edge(self, edge):
-        if edge.l.y() == edge.r.y():
-            return
-        
+    def trace_edge(self, edge:Edge):
+        '''
+        Traces edge with bresenhem algo
+        '''
 
-        if edge.l.y() > edge.r.y():
-            edge.l, edge.r = edge.r, edge.l
-        
-        step_x = (edge.r.x() - edge.l.x()) / (edge.r.y() - edge.l.y())
+        x1 = edge.l.x()
+        x2 = edge.r.x()
+        y1 = edge.l.y()
+        y2 = edge.r.y()
 
-        x = edge.l.x()
-        y = edge.l.y()
+        dx = int(x2 - x1)
+        dy = int(y2 - y1)
+        sx = math.copysign(1, dx)
+        sy = math.copysign(1, dy)
+        dx = abs(dx)
+        dy = abs(dy)
 
-        pix = QPixmap()
-        painter = QPainter()
-        painter.begin(self.image)
+        swap = False
+        if (dy <= dx):
+            swap = False
+        else:
+            swap = True
+            dx, dy = dy, dx
 
-        painter.setPen(QColorConstants.Green)
+        e = int(2 * dy - dx)
+        x = int(x1)
+        y = int(y1)
 
-        while y < edge.r.y():
-            if QColor(self.image.pixel(int(x) + 1, y)) != QColorConstants.Green:
-                painter.drawPoint(int(x) + 1, y)
-            else:
-                painter.drawPoint(int(x), y)
-            
-            x += step_x
-            y += 1
-
-        painter.end()
-
-        pix.convertFromImage(self.image)
-        self.scene.addPixmap(pix)
-
-
+        for i in range(dx + 1):
+            self.image.setPixel(x, y, self.backGroundColor.rgb())
+            if (e >= 0):
+                if (swap):
+                    x += sx
+                else:
+                    y += sy
+                e = e - 2 * dx
+            if (e < 0):
+                if (swap):
+                    y += sy
+                else:
+                    x += sx
+                e = e + 2 * dy
+        self.redraw()
 
     def trace_figure(self):
         for edge in self.edges:
@@ -208,53 +200,76 @@ class Window(QtWidgets.QMainWindow):
     
 
     def __paintOverFigure(self):
-        pix = QPixmap()
-        painter = QPainter()
+        self.scene.clear()
+        self.trace_figure()
 
-        left_x, right_x = self.__min_maxX()
-        down_y, upper_y = self.__min_maxY()
+        stack = [self.seed_point]
+        color = self.backGroundColor.rgb()
 
         start = perf_counter()
 
-        self.trace_figure()
-
-        painter.begin(self.image)
-        y = upper_y
-        while y > down_y - 1:
-            curr_color = QColorConstants.White
-            inv_color  = self.backGroundColor
-
-            curr_point_scan_string = left_x
-            x = left_x
-            while x < right_x + 3:
-                painter.setPen(curr_color)
-                if QColor(self.image.pixel(x, y)) == QColorConstants.Green:
-                    painter.drawLine(curr_point_scan_string, y, x, y)
-                    curr_color, inv_color = inv_color, curr_color
-                    curr_point_scan_string = x
-
-                x += 1
-            painter.drawLine(curr_point_scan_string, y, x - 1, y + 1)
-
-            
+        while len(stack):
             if self.do_slow_drawing.isChecked():
-                self.__delay()
-                pix.convertFromImage(self.image)
-                self.scene.addPixmap(pix)
+                QtWidgets.QApplication.processEvents()
+
+            point = stack.pop()
+            self.image.setPixel(point.x(), point.y(), color)
+
+            x, y = point.x() + 1, point.y()
+
+            while self.image.pixelColor(x, y).rgb() not in [self.backGroundColor.rgb(), self.lineColor.rgb()]:
+                self.image.setPixel(x, y, color)
+                x += 1
+
+            rborder = x - 1
+
+            x = point.x() - 1
+    
+            while self.image.pixelColor(x, y).rgb() not in [self.backGroundColor.rgb(), self.lineColor.rgb()]:
+                self.image.setPixel(x, y, color)
+                x -= 1
             
-            y -= 1
-        
-        if not self.do_slow_drawing.isChecked():
-            pix.convertFromImage(self.image)
-            self.scene.addPixmap(pix)
-        
-        painter.end()
-        self.drawEdges()
+            self.redraw()
+
+            lborder = x + 1
+
+            sign = [1, -1]
+
+            for i in sign:
+                x = lborder
+                y = point.y() + i
+
+                while x <= rborder:
+                    is_exist = False
+                    while self.image.pixelColor(x, y).rgb() not in [self.backGroundColor.rgb(), self.lineColor.rgb()] and x <= rborder:
+                        is_exist = True
+                        x += 1
+
+                    if is_exist:
+                        stack.append(QPoint(x - 1, y))
+
+                    xi = x
+                    while self.image.pixelColor(x, y).rgb() not in [self.backGroundColor.rgb(), self.lineColor.rgb()] and x <= rborder:
+                        x += 1
+                    if x == xi:
+                        x += 1
+        print('done')
 
         end = perf_counter()
 
         if not self.do_slow_drawing.isChecked():
-            self.time_label.setText(f'Время: {end - start:.3}')
+            self.time_label.setText(f"{end - start:.6}")
+
+        self.drawEdges()
+    
+    def redraw(self):
+        self.scene.clear()
+        self.scene.addPixmap(QPixmap.fromImage(self.image))
+    
+    def update_seed(self, seed:QPoint):
+        self.seed_point = seed
+        self.seed_x.setText(str(seed.x()))
+        self.seed_y.setText(str(seed.y()))
 
 
 class MyScene(QtWidgets.QGraphicsScene):
@@ -267,23 +282,26 @@ class MyScene(QtWidgets.QGraphicsScene):
 
     def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         if event.buttons() == Qt.LeftButton:
-            posx = event.scenePos().x()
-            posy = event.scenePos().y()
+            if self.window.choose_seed.isChecked():
+                self.window.update_seed(event.scenePos())
+            else:
+                posx = event.scenePos().x()
+                posy = event.scenePos().y()
 
-            if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
-                if posy != self.last_y:
-                    der = (posx - self.last_x) / (posy - self.last_y)
-                else:
-                    der = 2
-                if abs(der) <= 1:
-                    posx = self.last_x
-                else:
-                    posy = self.last_y
-            
-            self.window.addPoint(posx, posy)
+                if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
+                    if posy != self.last_y:
+                        der = (posx - self.last_x) / (posy - self.last_y)
+                    else:
+                        der = 2
+                    if abs(der) <= 1:
+                        posx = self.last_x
+                    else:
+                        posy = self.last_y
                 
-            self.last_x = posx
-            self.last_y = posy
+                self.window.addPoint(posx, posy)
+                    
+                self.last_x = posx
+                self.last_y = posy
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
