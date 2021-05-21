@@ -220,6 +220,7 @@ class Window(QtWidgets.QMainWindow):
 
         painter.begin(self.image)
         y = upper_y
+
         while y > down_y - 1:
             curr_color = QColorConstants.White
             inv_color  = self.backGroundColor
@@ -270,7 +271,7 @@ class MyScene(QtWidgets.QGraphicsScene):
             posx = event.scenePos().x()
             posy = event.scenePos().y()
 
-            if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
+            if event.modifiers() == Qt.KeyboardModifier.ShiftModifier and self.last_x is not None:
                 if posy != self.last_y:
                     der = (posx - self.last_x) / (posy - self.last_y)
                 else:
