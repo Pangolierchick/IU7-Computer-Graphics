@@ -19,6 +19,14 @@ class Edge:
     def __init__(self, l:QPoint, r:QPoint):
         self.l = l
         self.r = r
+    
+def sign(x):
+    if (x > 0):
+        return 1
+    elif (x < 0):
+        return -1
+    else:
+        return 0
 
 
 class Window(QtWidgets.QMainWindow):
@@ -107,7 +115,7 @@ class Window(QtWidgets.QMainWindow):
     
     def drawPolyHandler(self, p:QPoint):
         if self.last_point is not None:
-            self.scene.addLine(self.last_point.x(), self.last_point.y(), p.x(), p.y(), self.pen)
+            self.Bresenham(self.last_point.x(), self.last_point.y(), p.x(), p.y())
 
             self.edges.append(Edge(self.last_point, p))
         else:
@@ -116,32 +124,11 @@ class Window(QtWidgets.QMainWindow):
         self.last_point = p
 
         self.points.append(p)
-
-    
-    def drawEdges(self):
-        pix = QPixmap()
-        painter = QPainter()
-
-        painter.begin(self.image)
-
-        pen = QPen(QColorConstants.Black)
-        pen.setWidth(1)
-        painter.setPen(pen)
-
-        for edge in self.edges:
-            painter.drawLine(edge.l.x(), edge.l.y(), edge.r.x(), edge.r.y())
-        
-        painter.end()
-
-        pix.convertFromImage(self.image)
-        self.scene.clear()
-        self.scene.addPixmap(pix)
-
     
     def __closePoly(self):
         if len(self.edges) > 1:
             last = self.edges[-1].r
-            self.scene.addLine(self.first_point.x(), self.first_point.y(), last.x(), last.y(), self.pen)
+            self.Bresenham(self.first_point.x(), self.first_point.y(), last.x(), last.y())
 
             self.last_point = None
 
@@ -150,20 +137,11 @@ class Window(QtWidgets.QMainWindow):
     def __delay(self):
         QtWidgets.QApplication.processEvents(QEventLoop.AllEvents, 1)
     
-    def trace_edge(self, edge:Edge):
-        '''
-        Traces edge with bresenhem algo
-        '''
-
-        x1 = edge.l.x()
-        x2 = edge.r.x()
-        y1 = edge.l.y()
-        y2 = edge.r.y()
-
+    def Bresenham(self, x1, y1, x2, y2, color=QColor(0, 0, 0).rgb()):
         dx = int(x2 - x1)
         dy = int(y2 - y1)
-        sx = math.copysign(1, dx)
-        sy = math.copysign(1, dy)
+        sx = sign(dx)
+        sy = sign(dy)
         dx = abs(dx)
         dy = abs(dy)
 
@@ -179,7 +157,7 @@ class Window(QtWidgets.QMainWindow):
         y = int(y1)
 
         for i in range(dx + 1):
-            self.image.setPixel(x, y, self.backGroundColor.rgb())
+            self.image.setPixel(x, y, color)
             if (e >= 0):
                 if (swap):
                     x += sx
@@ -192,16 +170,20 @@ class Window(QtWidgets.QMainWindow):
                 else:
                     x += sx
                 e = e + 2 * dy
+        
         self.redraw()
+    
+    def trace_edge(self, edge:Edge, color=QColorConstants.Black.rgb()):
+        self.Bresenham(edge.l.x(), edge.l.y(), edge.r.x(), edge.r.y(), color)
 
-    def trace_figure(self):
+    def trace_figure(self, color=QColorConstants.Black.rgb()):
         for edge in self.edges:
-            self.trace_edge(edge)
+            self.trace_edge(edge, color)
     
 
     def __paintOverFigure(self):
         self.scene.clear()
-        self.trace_figure()
+        self.trace_figure(self.backGroundColor.rgb())
 
         stack = [self.seed_point]
         color = self.backGroundColor.rgb()
@@ -246,7 +228,10 @@ class Window(QtWidgets.QMainWindow):
                         x += 1
 
                     if is_exist:
-                        stack.append(QPoint(x - 1, y))
+                        if self.image.pixelColor(x, y).rgb() not in [self.backGroundColor.rgb(), self.lineColor.rgb()] and x == rborder:
+                            stack.append(QPoint(x, y))
+                        else:
+                            stack.append(QPoint(x - 1, y))
 
                     xi = x
                     while self.image.pixelColor(x, y).rgb() not in [self.backGroundColor.rgb(), self.lineColor.rgb()] and x <= rborder:
@@ -260,7 +245,8 @@ class Window(QtWidgets.QMainWindow):
         if not self.do_slow_drawing.isChecked():
             self.time_label.setText(f"{end - start:.6}")
 
-        self.drawEdges()
+        self.trace_figure()
+        # self.trace_figure()
     
     def redraw(self):
         self.scene.clear()
