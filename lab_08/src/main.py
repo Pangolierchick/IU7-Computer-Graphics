@@ -49,10 +49,15 @@ class mainWindow(QtWidgets.QMainWindow):
         self.closeCutter.clicked.connect(self.closeCutterHandler)
 
     def drawLine(self, p1:QPoint, p2:QPoint, color:QColor):
-        self.scene.addLine(p1.x(), p1.y(), p2.x(), p2.y(), QPen(color))
+        pen = QPen(color)
+
+        if color == self.CUTTED_LINE_COLOR:
+            pen.setWidthF(1.3)
+
+        self.scene.addLine(p1.x(), p1.y(), p2.x(), p2.y(), pen)
 
     def addCutterBtnHandler(self):
-        self.adding_cutter = True
+        self.adding_cutter = not self.adding_cutter
 
     def repaint(self):
         self.scene.clear()
@@ -62,6 +67,7 @@ class mainWindow(QtWidgets.QMainWindow):
         '''
         Line preview routine. Returns start point and color
         '''
+
         start_p = None
 
         if self.adding_cutter:
@@ -109,6 +115,10 @@ class mainWindow(QtWidgets.QMainWindow):
         if len(self.cutter) > 2:
             self.drawLine(self.cutter[0], self.cutter[-1], self.CUTTER_COLOR)
             self.curr_line.clear()
+
+            self.cutter.append(self.cutter[0])
+
+            self.adding_cutter = False
         else:
             self.throwWarn('Введенно недостаточное кол-во ребер отсекателя.')
 
@@ -119,11 +129,29 @@ class mainWindow(QtWidgets.QMainWindow):
         warn.exec_()
 
     def cutBtnHandler(self):
-        convexity = cut.checkConvex(self.cutter)
+        convexity = cut.checkConvexity(self.cutter)
 
         if convexity != 1:
             self.throwWarn('Заданный отсекатель не является выпуклым многоугольником')
             return
+
+        poly3d = cut.twoD2ThreeDPoly(self.cutter)
+
+        direction = cut.direction(poly3d)
+
+        if direction == 0:
+            print('direction is zero. Exitting...')
+            return
+
+        normVect = cut.normalizePoly(poly3d, direction)
+
+        for i in self.lines:
+            visible, p1, p2 = cut.cutLine(poly3d, normVect, i.p1(), i.p2())
+
+            print('visible?:', visible)
+
+            if visible:
+                self.drawLine(p1, p2, self.CUTTED_LINE_COLOR)
 
         
 
