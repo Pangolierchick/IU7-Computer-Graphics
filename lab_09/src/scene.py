@@ -28,19 +28,7 @@ class graphicsScene(PyQt5.QtWidgets.QGraphicsScene):
             self.preview = None
 
         if left_p is not None:
-            if shift:
-                dx = pos.x() - left_p.x()
-                dy = pos.y() - left_p.y()
-
-                if abs(dy) > abs(dx):
-                    self.preview = self.addLine(left_p.x(), left_p.y(), left_p.x(), pos.y(), QPen(color))
-                    self.release = QPoint(left_p.x(), pos.y())
-                else:
-                    self.preview = self.addLine(left_p.x(), left_p.y(), pos.x(), left_p.y(), QPen(color))
-                    self.release = QPoint(pos.x(), left_p.y())
-            else:
-                self.preview = self.addLine(left_p.x(), left_p.y(), pos.x(), pos.y(), QPen(color))
-                self.release = QPoint(pos.x(), pos.y())
+            self.preview = self.addLine(left_p.x(), left_p.y(), pos.x(), pos.y(), QPen(color))
 
         super().mouseMoveEvent(event)
 
@@ -51,7 +39,7 @@ class graphicsScene(PyQt5.QtWidgets.QGraphicsScene):
         self.parent.lineAddHandler(pos, PRESS)
 
     def mouseReleaseEvent(self, event):
-        pos = self.release
+        pos = QPoint(event.scenePos().x(), event.scenePos().y())
 
         self.parent.lineAddHandler(pos, RELEASE)
 

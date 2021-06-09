@@ -87,21 +87,21 @@ class mainWindow(QtWidgets.QMainWindow):
 
         if len(self.curr_line) == 2:
             if self.adding_cutter:
-                if len(self.cutter) == 0:
-                    self.cutter.append(self.curr_line[0])
-
-                if type == scene.RELEASE:
-                    self.cutter.append(p)
-                    self.drawLine(self.curr_line[0], self.curr_line[1], self.CUTTER_COLOR)
-                    del self.curr_line[0]
-                else:
-                    del self.curr_line[1]
+                curr_buf = self.cutter
+                color = self.CUTTER_COLOR
             else:
-                self.lines.append(QLine(self.curr_line[0], self.curr_line[1]))
+                curr_buf = self.lines
+                color = self.LINE_COLOR
 
-                self.drawLine(self.curr_line[0], self.curr_line[1], self.LINE_COLOR)
+            if len(curr_buf) == 0:
+                curr_buf.append(self.curr_line[0])
 
-                self.curr_line.clear()
+            if type == scene.RELEASE:
+                curr_buf.append(p)
+                self.drawLine(self.curr_line[0], self.curr_line[1], color)
+                del self.curr_line[0]
+            else:
+                del self.curr_line[1]
 
     def cleanScreen(self):
         self.image.fill(QColorConstants.White)
@@ -114,15 +114,20 @@ class mainWindow(QtWidgets.QMainWindow):
         self.scene.reset()
 
     def closeCutterHandler(self):
-        if len(self.cutter) > 2:
-            self.drawLine(self.cutter[0], self.cutter[-1], self.CUTTER_COLOR)
-            self.curr_line.clear()
+        if self.adding_cutter:
+            curr_fig = self.cutter
+            color    = self.CUTTER_COLOR
+        else:
+            curr_fig = self.lines
+            color    = self.LINE_COLOR
 
-            self.cutter.append(self.cutter[0])
+        if len(curr_fig) > 2:
+            self.drawLine(curr_fig[0], curr_fig[-1], color)
+            self.curr_line.clear()
 
             self.adding_cutter = False
         else:
-            self.throwWarn('Введенно недостаточное кол-во ребер отсекателя.')
+            self.throwWarn('Введенно недостаточное кол-во ребер.')
 
     def throwWarn(self, text:str):
         warn = QMessageBox()
@@ -131,29 +136,11 @@ class mainWindow(QtWidgets.QMainWindow):
         warn.exec_()
 
     def cutBtnHandler(self):
-        convexity = cut.checkConvexity(self.cutter)
+        fig = cut.cut(self.lines, self.cutter)
 
-        if convexity != 1:
-            self.throwWarn('Заданный отсекатель не является выпуклым многоугольником')
-            return
+        for i, v in enumerate(fig):
+            self.drawLine(fig[i], fig[(i + 1) % len(fig)], self.CUTTED_LINE_COLOR)
 
-        poly3d = cut.twoD2ThreeDPoly(self.cutter)
-
-        direction = cut.direction(poly3d)
-
-        if direction == 0:
-            print('direction is zero. Exitting...')
-            return
-
-        normVect = cut.normalizePoly(poly3d, direction)
-
-        for i in self.lines:
-            visible, p1, p2 = cut.cutLine(poly3d, normVect, i.p1(), i.p2())
-
-            print('visible?:', visible)
-
-            if visible:
-                self.drawLine(p1, p2, self.CUTTED_LINE_COLOR)
 
     def keyPressEvent(self, event):
         key = event.key()
